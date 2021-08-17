@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Music Player</title>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -13,7 +14,14 @@
     </head>
     <body>
         <video id="audio-player"><source type="audio/mp3" /></video>
-        <div class="content-container"></div>
+        <div class="content-container">
+            <div class="song-list-container">
+                <div class="song-row">
+                    <button class="song-play-button material-icons md-dark" onclick="playSong('Decapitation')">play_arrow</button>
+                    <p>Decapitation</p>
+                </div>
+            </div>
+        </div>
         <div class="side-bar"></div>
         <div class="info-container">
             <img class="info--thumbnail" />
@@ -25,8 +33,7 @@
         <div class="control-bar">
             <div class="control-button-container">
                 <button class="control-button previous-button material-icons md-dark">skip_previous</button>
-                <button class="control-button play-button material-icons md-dark">play_arrow</button>
-                <button class="control-button pause-button material-icons md-dark">pause</button>
+                <button class="control-button play-button material-icons md-dark">play_circle</button>
                 <button class="control-button next-button material-icons md-dark">skip_next</button>
             </div>
             <div class=progress-container>

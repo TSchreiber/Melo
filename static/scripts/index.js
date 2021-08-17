@@ -3,7 +3,6 @@ let player = {
     "source": document.getElementById("audio-player").children[0],
     "controls": {
         "play": document.querySelector(".play-button"),
-        "pause": document.querySelector(".pause-button"),
         "previous": document.querySelector(".previous-button"),
         "next": document.querySelector(".next-button"),
         "progress": document.querySelector(".progress-bar")
@@ -14,8 +13,24 @@ let player = {
         "artist": document.querySelector(".info--artist"),
     }
 };
-player.controls.play.onclick = () => player.element.play();
-player.controls.pause.onclick = () => player.element.pause();
+
+Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
+    get: function(){
+        return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
+    }
+});
+
+player.element.addEventListener("play", () => player.controls.play.innerText = "pause_circle");
+player.element.addEventListener("pause", () => player.controls.play.innerText = "play_circle");
+
+player.controls.play.onclick = () => {
+    if (player.element.playing) {
+        player.element.pause();
+    } else {
+        player.element.play();
+    }
+}
+
 setInterval(() => {
     let progress = player.element.currentTime / player.element.duration;
     let nRight = (1 - progress) * 100;
@@ -24,7 +39,7 @@ setInterval(() => {
 }, 40)
 
 let song_list = {
-    "element": document.querySelector(".content-container"),
+    "container": document.querySelector(".song-list-container"),
     "append": (name) => {
         let el = document.createElement("div");
         el.classList.add("song-row");
@@ -39,7 +54,7 @@ let song_list = {
         title.innerText = name;
         el.appendChild(play);
         el.appendChild(title);
-        song_list.element.append(el);
+        song_list.container.append(el);
     }
 }
 
