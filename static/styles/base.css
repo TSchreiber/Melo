@@ -1,0 +1,14 @@
+:root { font-family: "Open Sans", sans-serif; color: white; }
+html { height: 100%; }
+
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+button { border: none; background: none; }
+a { text-decoration: none; }
+
+.material-icons-outlined.md-dark { color: white; }
+.material-icons.md-dark { color: white; }

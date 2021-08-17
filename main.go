@@ -13,21 +13,20 @@ func main() {
     if err != nil {
         panic(err)
     }
-    TestAddSong(db)
-	err = StartServer(config.Server)
-    log.Fatal(err)
+    server := NewServer(config.Server, db)
+    log.Fatal(server.StartServer())
 }
 
-func TestAddSong(db *scribble.Driver) {
-    s := Song{
-        MP3URL:"/songs/Decapitation.mp3",
-        ThumbnailURL:"https://img.youtube.com/vi/fN47i-0RO6w/0.jpg",
-        Title:"Decapitation",
-        Artist:"Piri"}
-    if err := db.Write("songs", "Decapitation", s); err != nil {
-        log.Fatal(err)
-    }
-}
+// func TestAddSong(db *scribble.Driver) {
+//     s := Song{
+//         MP3URL:"/song/Decapitation.mp3",
+//         ThumbnailURL:"https://img.youtube.com/vi/fN47i-0RO6w/0.jpg",
+//         Title:"Decapitation",
+//         Artist:"Piri"}
+//     if err := db.Write("songs", "Decapitation", s); err != nil {
+//         log.Fatal(err)
+//     }
+// }
 
 type Config struct {
 	Server ServerInfo

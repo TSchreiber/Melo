@@ -1,0 +1,60 @@
+body {
+    display: grid;
+    grid-template-areas: "side-bar content" "info controls";
+    grid-template-columns: clamp(24ch, 32ch, 40ch) 1fr;
+    grid-template-rows: 1fr auto;
+}
+.control-bar { grid-area: controls; }
+.info-container { grid-area: info; }
+.content-container { grid-area: content; }
+.side-bar { grid-area: side-bar}
+video { display: none; }
+
+.control-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.control-button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.control-button {
+    background: none;
+    font-size: 2rem;
+}
+
+.info-container { display: flex; }
+.info-container--inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.info--thumbnail {
+    object-fit: cover;
+    margin: 10px;
+    width: clamp(24px, 15vmin, 64px);
+    height: clamp(24px, 15vmin, 64px);
+}
+
+.info--title { font-size: 1.2rem; }
+.info--artist { font-size: 0.85rem; }
+
+.song-row { display: flex; }
+
+.progress-bar {
+    width: min(80%, 768px);
+    height: 5px;
+    margin: 10px auto 10px auto;
+    position: relative;
+}
+
+.progress-bar--inner {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    right: 100%;
+}
