@@ -21,10 +21,10 @@ video { display: none; }
     justify-content: center;
 }
 
-.control-button {
-    background: none;
-    font-size: 2rem;
-}
+.control-button {  background: none; }
+.control-button.play-button { font-size: 2.5rem; }
+.control-button.previous-button,
+.control-button.next-button { font-size: 1.5rem; }
 
 .info-container { display: flex; }
 .info-container--inner {
@@ -46,7 +46,7 @@ video { display: none; }
 .song-row { display: flex; }
 
 .progress-bar {
-    width: min(80%, 768px);
+    width: min(80%, 554px);
     height: 5px;
     margin: 10px auto 10px auto;
     position: relative;
