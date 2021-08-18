@@ -2,7 +2,10 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <link rel="manifest" href="manifest.json">
+        <link rel="apple-touch-icon" href="/images/icons-512.png">
+        <meta name="theme-color" content="#41B8DF">
         <title>Music Player</title>
         <link rel="icon" href="/images/icons-192.png" type="image/png">
         <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -13,7 +16,7 @@
         <link rel="stylesheet" href="/styles/theme.css">
         <script defer src="/scripts/index.js"></script>
     </head>
-    <body>
+    <body style="overflow: hidden;">
         <video id="audio-player"><source type="audio/mp3" /></video>
         <div class="content-container">
             <div class="song-list-container">
@@ -46,4 +49,5 @@
             </div>
         </div>
     </body>
+    <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');</script>
 </html>
