@@ -11,11 +11,6 @@ body {
 video { display: none; }
 
 .control-bar {
-    /*
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    */
     display: grid;
     grid-template-areas:
         "main side"
@@ -100,4 +95,26 @@ input[type=range]:hover::-webkit-slider-thumb {
     height: 100%;
     width: 100%;
     right: 100%;
+}
+
+@media only screen and (max-width: 792px) {
+    body {
+        grid-template-columns: minmax(182px,1fr) 2fr;
+    }
+
+    #control-bar {
+        grid-template-areas: "main" "prog";
+        grid-template-columns: 1fr;
+    }
+
+    #controls-side {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 492px) {
+    body {
+        grid-template-areas: "content" "info" "controls";
+        grid-template-columns: 1fr;
+    }
 }
