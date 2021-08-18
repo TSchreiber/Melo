@@ -8,3 +8,8 @@
     overflow: hidden;
 }
 .progress-bar--inner { background: #41B8DF; }
+
+input[type=range] {
+    --background: #4D4D4F;
+    --fill-color: #41B8DF;
+}

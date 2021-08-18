@@ -30,14 +30,18 @@
                 <div class="info--artist"></div>
             </div>
         </div>
-        <div class="control-bar">
-            <div class="control-button-container">
+        <div id="control-bar" class="control-bar">
+            <div id="controls-main" class="control-button-container">
                 <button class="control-button previous-button material-icons md-dark">skip_previous</button>
                 <button class="control-button play-button material-icons md-dark">play_circle</button>
                 <button class="control-button next-button material-icons md-dark">skip_next</button>
             </div>
-            <div class=progress-container>
+            <div id="controls-progress" class=progress-container>
                 <div class="progress-bar"><div class="progress-bar--inner"></div></div>
+            </div>
+            <div id="controls-side">
+                <button id="mute-button" class="control-button volume-slider material-icons md-dark">volume_up</button>
+                <input id="volume-slider" type="range" min="0" max="100" value="50">
             </div>
         </div>
     </body>

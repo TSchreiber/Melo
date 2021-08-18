@@ -5,7 +5,9 @@ let player = {
         "play": document.querySelector(".play-button"),
         "previous": document.querySelector(".previous-button"),
         "next": document.querySelector(".next-button"),
-        "progress": document.querySelector(".progress-bar")
+        "progress": document.querySelector(".progress-bar"),
+        "volume": document.getElementById("volume-slider"),
+        "mute": document.getElementById("mute-button"),
     },
     "info": {
         "thumbnail": document.querySelector(".info--thumbnail"),
@@ -30,6 +32,23 @@ player.controls.play.onclick = () => {
         player.element.play();
     }
 }
+
+player.controls.mute.addEventListener("click", () =>
+    player.element.muted = !player.element.muted);
+
+player.controls.volume.addEventListener("input", () =>
+    player.element.volume = Math.pow(player.controls.volume.value / 100.0, 4));
+
+player.element.addEventListener("volumechange", () => {
+    if (player.element.muted)
+        player.controls.mute.innerText = "volume_off";
+    else if (player.element.volume > .0625)
+        player.controls.mute.innerText = "volume_up";
+    else if (player.element.volume > 0)
+        player.controls.mute.innerText = "volume_down";
+    else
+        player.controls.mute.innerText = "volume_mute";
+});
 
 setInterval(() => {
     let progress = player.element.currentTime / player.element.duration;
@@ -79,3 +98,15 @@ function playSong(songName) {
         player.info.artist.innerText = data.Artist;
     });
 }
+
+/**
+ * Custom styling for slider (range) inputs
+ */
+ (() => {
+     for (let slider of document.querySelectorAll('input[type="range"]')) {
+        slider.oninput = function() {
+            var value = (this.value-this.min)/(this.max-this.min)*100
+            this.style.backgroundSize = `${value}%,100%`
+        }
+    }
+})();

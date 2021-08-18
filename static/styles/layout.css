@@ -11,9 +11,52 @@ body {
 video { display: none; }
 
 .control-bar {
+    /*
     display: flex;
     flex-direction: column;
     justify-content: center;
+    */
+    display: grid;
+    grid-template-areas:
+        "main side"
+        "prog side";
+    grid-template-columns: 1fr clamp(24ch, 32ch, 40ch);
+}
+#controls-main { grid-area: main; }
+#controls-side { grid-area: side; }
+#controls-progress { grid-area: prog; }
+
+#controls-side {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1em;
+}
+
+input[type=range] {
+    background-image: linear-gradient(var(--fill-color), var(--fill-color)),
+                      linear-gradient(var(--background), var(--background));
+    background-size: 50%, 100%;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    height: 4px;
+    width: 112px;
+    outline: none;
+    -webkit-appearance: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+}
+input[type=range]:hover::-webkit-slider-thumb {
+  display: block;
 }
 
 .control-button-container {
