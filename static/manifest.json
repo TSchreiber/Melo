@@ -16,7 +16,7 @@
   ],
   "start_url": "/?source=pwa",
   "navigateFallback": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "description": "",
   "background_color": "#4D4D4F",
   "theme_color": "#41B8DF"
