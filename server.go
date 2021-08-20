@@ -6,17 +6,28 @@ import (
     "net/http"
     scribble "github.com/nanobox-io/golang-scribble"
     "github.com/gorilla/mux"
+    "github.com/gorilla/sessions"
+    "golang.org/x/crypto/bcrypt"
     "os"
     "time"
+    "strings"
 )
 
-func NewServer(serverInfo ServerInfo, DB *scribble.Driver) *Server {
-    router := mux.NewRouter()
-    server := Server{serverInfo, router, DB}
+var store = sessions.NewCookieStore([]byte("passphrase"))
+var DB *scribble.Driver
 
+func NewServer(serverInfo ServerInfo, Database *scribble.Driver) *Server {
+    router := mux.NewRouter()
+    server := Server{serverInfo, router, Database}
+    DB = Database
+
+    router.Use(Authenticate)
+    router.HandleFunc("/login", LoginGet).Methods("GET")
+    router.HandleFunc("/login", LoginPost).Methods("POST")
+    router.HandleFunc("/register", RegisterGet).Methods("GET")
+    router.HandleFunc("/register", RegisterPost).Methods("POST")
     router.HandleFunc("/api/song", server.SongListHandler)
     router.HandleFunc("/api/song/{name}", server.SongHandler)
-    http.Handle("/", router)
     router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
     return &server
 }
@@ -38,6 +49,63 @@ func (server *Server) StartServer() error {
     }
 
     return srv.ListenAndServe()
+}
+
+func LoginGet(w http.ResponseWriter, r *http.Request) {
+    http.ServeFile(w, r, "./static/login.html")
+}
+
+func LoginPost(w http.ResponseWriter, r *http.Request) {
+    r.ParseForm()
+    username := r.PostForm.Get("username")
+    password := r.PostForm.Get("password")
+    var hash string
+    DB.Read("users", username, &hash)
+    if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
+        fmt.Println(err, "\n", hash)
+        return
+    }
+
+    session, _ := store.Get(r, "session")
+    session.Values["username"] = username
+    fmt.Println(username, password)
+    session.Save(r, w)
+    http.Redirect(w, r, "/", 302)
+}
+
+func RegisterGet(w http.ResponseWriter, r *http.Request) {
+    http.ServeFile(w, r, "./static/register.html")
+}
+
+func RegisterPost(w http.ResponseWriter, r *http.Request) {
+    r.ParseForm()
+    username := r.PostForm.Get("username")
+    password := r.PostForm.Get("password")
+    hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    DB.Write("users", username, string(hash))
+    http.Redirect(w, r, "/login", 302)
+}
+
+func Authenticate(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // Exempt paths
+        url := strings.ToLower(r.URL.Path)
+        if url == "/login" || url == "/register" {
+            next.ServeHTTP(w,r)
+            return
+        }
+        session, err := store.Get(r, "session")
+        if err != nil {
+            fmt.Println(err)
+        }
+        v, ok := session.Values["username"]
+        fmt.Println(v, ok)
+        if !ok {
+            http.Redirect(w, r, "/login", 302)
+            return
+        }
+        next.ServeHTTP(w, r)
+    })
 }
 
 func (server *Server) SongListHandler(w http.ResponseWriter, r *http.Request) {
