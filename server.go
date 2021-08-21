@@ -12,6 +12,7 @@ import (
     "time"
     "strings"
     "io"
+    "io/ioutil"
 )
 
 var store = sessions.NewCookieStore([]byte("passphrase"))
@@ -131,7 +132,19 @@ func Authenticate(next http.Handler) http.Handler {
 
 func SongListHandler() http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, `["Decapitation"]`)
+        files, err := ioutil.ReadDir(".database/song")
+        names := make([]string, len(files))
+        if err != nil {
+            fmt.Println(err)
+            w.WriteHeader(http.StatusInternalServerError)
+            fmt.Fprint(w, "500 - Internal server error")
+        } else {
+            for i,file := range files {
+                name := fmt.Sprintf(`"%s"`, file.Name()[:len(file.Name())-5])
+                names[i] = name
+            }
+            fmt.Fprintf(w, `[%s]`, strings.Join(names, ", "))
+        }
     })
 }
 
