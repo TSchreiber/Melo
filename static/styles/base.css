@@ -8,7 +8,7 @@ body {
 }
 
 button { border: none; background: none; }
-a { text-decoration: none; }
+a { text-decoration: none; color: unset; }
 
 .material-icons-outlined.md-dark { color: white; }
 .material-icons.md-dark { color: white; }
