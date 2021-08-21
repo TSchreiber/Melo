@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="side-bar">
-            <a id="add-song-container" href="#">
+            <a id="add-song-container" href="#" onclick="showNewSongForm()">
                 <p>Add Song</p>
                 <p class="material-icons md-dark">add_circle_outlined</p>
             </a>
@@ -53,6 +53,58 @@
                 <input id="volume-slider" type="range" min="0" max="100" value="50">
             </div>
         </div>
+
+        <form id="new-song-form" class="hidden" action="#">
+            <div>
+                <label for="NSF-Title">Title</label>
+                <input id="NSF-Title" name="Title">
+            </div>
+            <div>
+                <label for="NSF-Title">MP3 URL</label>
+                <input id="NSF-mp3" name="MP3URL">
+            </div>
+            <div>
+                <label for="NSF-Title">Thumbnail URL</label>
+                <input id="NSF-thumb" name="ThumbnailURL">
+            </div>
+            <div>
+                <label for="NSF-Title">Artist</label>
+                <input id="NSF-artist" name="Artist">
+            </div>
+            <div>
+                <label for="NSF-Title">Album</label>
+                <input id="NSF-album" name="Album">
+            </div>
+            <button type="submit" onclick="submitNewSongForm()">Add</button>
+        </form>
     </body>
     <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');</script>
+    <script>
+        function showNewSongForm() {
+            document.getElementById("new-song-form").classList.remove("hidden");
+        }
+
+        function submitNewSongForm(e) {
+            let title = document.getElementById("NSF-Title").value;
+            let mp3url = document.getElementById("NSF-mp3").value;
+            let thumb = document.getElementById("NSF-thumb").value;
+            let artist = document.getElementById("NSF-artist").value;
+            fetch("/new-song", {
+                "method": "POST",
+                "body": JSON.stringify({
+                    "Title": title,
+                    "MP3URL": mp3url,
+                    "ThumbnailURL": thumb,
+                    "Artist": artist
+                })
+            })
+            .then( (res) => {
+                if (res.ok) {
+                    document.getElementById("new-song-form").classList.add("hidden")
+                } else {
+                    console.log(res.statusText)
+                }
+            })
+        }
+    </script>
 </html>

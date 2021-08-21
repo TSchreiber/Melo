@@ -150,3 +150,24 @@ input[type=range]:hover::-webkit-slider-thumb {
    right of the icon for "add_circle_outlined", so the negative padding is here
    to get rid of the extra space */
 #add-song-container p.material-icons { margin-right: -1ch; }
+
+#new-song-form {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    grid-gap: 25px;
+}
+
+#new-song-form > div {
+    display: flex;
+    flex-direction: column;
+}
+
+#new-song-form > button {
+    background: #4D4D4F;
+    color: white;
+    cursor: pointer;
+}

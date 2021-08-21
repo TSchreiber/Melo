@@ -13,6 +13,9 @@ import (
     "strings"
     "io"
     "io/ioutil"
+    "encoding/json"
+    "encoding/base64"
+    "math/rand"
 )
 
 var store = sessions.NewCookieStore([]byte("passphrase"))
@@ -23,11 +26,11 @@ func NewServer(serverInfo ServerInfo, Database *scribble.Driver) *Server {
     server := Server{serverInfo, router, Database}
     DB = Database
 
-    // router.Use(Authenticate)
     router.HandleFunc("/login", LoginGet).Methods("GET")
     router.HandleFunc("/login", LoginPost).Methods("POST")
     router.HandleFunc("/register", RegisterGet).Methods("GET")
     router.HandleFunc("/register", RegisterPost).Methods("POST")
+    router.Handle("/new-song", AuthenticateFunc(SongPost)).Methods("POST")
 
     router.Handle("/log", Authenticate(LogPost())).Methods("POST")
     router.Handle("/api/song", Authenticate(SongListHandler()))
@@ -130,6 +133,13 @@ func Authenticate(next http.Handler) http.Handler {
     })
 }
 
+func AuthenticateFunc(next func (w http.ResponseWriter, r *http.Request)) http.Handler {
+    return Authenticate(
+        http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            next(w, r)
+        }))
+}
+
 func SongListHandler() http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         files, err := ioutil.ReadDir(".database/song")
@@ -157,4 +167,45 @@ func SongHandler() http.HandlerFunc {
         }
         w.Write(b)
     })
+}
+
+func GenerateSongID() string {
+    rand.Seed(time.Now().UnixNano())
+    for i:=0; i<100; i++ {
+        b := make([]byte, 24)
+        for i,_:= range b {
+            b[i] = byte(rand.Int())
+        }
+        id := base64.StdEncoding.EncodeToString(b)
+        if _, err := os.Stat("/.database/song/" + id + ".json"); os.IsNotExist(err) {
+            return id
+        }
+        fmt.Println(id)
+    }
+    return ""
+}
+
+func SongPost(w http.ResponseWriter, r *http.Request) {
+    b, err := io.ReadAll(r.Body)
+    if err != nil {
+        fmt.Printf("Failed to read body,\n%s\n", err)
+        w.WriteHeader(http.StatusBadRequest)
+        fmt.Fprint(w, "400 - Malformed form data")
+        return
+    }
+    var song Song
+    if err = json.Unmarshal(b,&song); err != nil {
+        fmt.Printf("Failed to parse body,\n\t%s\n\t%s\n", err, string(b))
+        w.WriteHeader(http.StatusBadRequest)
+        fmt.Fprint(w, "400 - Malformed form data")
+        return
+    }
+    if err = DB.Write("song", GenerateSongID(), song); err != nil {
+        fmt.Printf("Failed to write to database,\n%s\n", err)
+        w.WriteHeader(http.StatusBadRequest)
+        fmt.Fprint(w, "400 - Malformed form data")
+        return
+    }
+    // fmt.Fprint(w, "")
+    w.WriteHeader(http.StatusOK)
 }

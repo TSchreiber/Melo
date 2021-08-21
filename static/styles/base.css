@@ -12,3 +12,5 @@ a { text-decoration: none; color: unset; }
 
 .material-icons-outlined.md-dark { color: white; }
 .material-icons.md-dark { color: white; }
+
+.hidden { display: none !important; }
