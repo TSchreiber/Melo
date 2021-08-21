@@ -11,6 +11,7 @@ import (
     "os"
     "time"
     "strings"
+    "io"
 )
 
 var store = sessions.NewCookieStore([]byte("passphrase"))
@@ -27,6 +28,7 @@ func NewServer(serverInfo ServerInfo, Database *scribble.Driver) *Server {
     router.HandleFunc("/register", RegisterGet).Methods("GET")
     router.HandleFunc("/register", RegisterPost).Methods("POST")
 
+    router.Handle("/log", Authenticate(LogPost())).Methods("POST")
     router.Handle("/api/song", Authenticate(SongListHandler()))
     router.Handle("/api/song/{name}", Authenticate(SongHandler()))
     router.Handle("/", Authenticate(HomeGet()))
@@ -92,6 +94,19 @@ func RegisterPost(w http.ResponseWriter, r *http.Request) {
     hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
     DB.Write("users", username, string(hash))
     http.Redirect(w, r, "/login", 302)
+}
+
+func LogPost() http.HandlerFunc {
+    return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request){
+        b, err := io.ReadAll(r.Body)
+        if err != nil {
+            w.WriteHeader(http.StatusBadRequest)
+            fmt.Fprintf(w, "400 - Bad Request\n%s", err)
+        } else {
+            fmt.Println(string(b))
+            fmt.Fprint(w, "")
+        }
+    })
 }
 
 func Authenticate(next http.Handler) http.Handler {
