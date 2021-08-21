@@ -21,13 +21,17 @@ func NewServer(serverInfo ServerInfo, Database *scribble.Driver) *Server {
     server := Server{serverInfo, router, Database}
     DB = Database
 
-    router.Use(Authenticate)
+    // router.Use(Authenticate)
     router.HandleFunc("/login", LoginGet).Methods("GET")
     router.HandleFunc("/login", LoginPost).Methods("POST")
     router.HandleFunc("/register", RegisterGet).Methods("GET")
     router.HandleFunc("/register", RegisterPost).Methods("POST")
-    router.HandleFunc("/api/song", server.SongListHandler)
-    router.HandleFunc("/api/song/{name}", server.SongHandler)
+
+    router.Handle("/api/song", Authenticate(SongListHandler()))
+    router.Handle("/api/song/{name}", Authenticate(SongHandler()))
+    router.Handle("/", Authenticate(HomeGet()))
+    router.PathPrefix("/song").Handler(Authenticate(
+        http.FileServer(http.Dir("./static"))))
     router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
     return &server
 }
@@ -51,6 +55,12 @@ func (server *Server) StartServer() error {
     return srv.ListenAndServe()
 }
 
+func HomeGet() http.HandlerFunc {
+    return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+        http.ServeFile(w, r, "./static/index.html")
+    })
+}
+
 func LoginGet(w http.ResponseWriter, r *http.Request) {
     http.ServeFile(w, r, "./static/login.html")
 }
@@ -62,13 +72,11 @@ func LoginPost(w http.ResponseWriter, r *http.Request) {
     var hash string
     DB.Read("users", username, &hash)
     if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
-        fmt.Println(err, "\n", hash)
         return
     }
 
     session, _ := store.Get(r, "session")
     session.Values["username"] = username
-    fmt.Println(username, password)
     session.Save(r, w)
     http.Redirect(w, r, "/", 302)
 }
@@ -98,9 +106,7 @@ func Authenticate(next http.Handler) http.Handler {
         if err != nil {
             fmt.Println(err)
         }
-        v, ok := session.Values["username"]
-        fmt.Println(v, ok)
-        if !ok {
+        if _, ok := session.Values["username"]; !ok {
             http.Redirect(w, r, "/login", 302)
             return
         }
@@ -108,15 +114,19 @@ func Authenticate(next http.Handler) http.Handler {
     })
 }
 
-func (server *Server) SongListHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, `["Decapitation"]`)
+func SongListHandler() http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintf(w, `["Decapitation"]`)
+    })
 }
 
-func (server *Server) SongHandler(w http.ResponseWriter, r *http.Request) {
-    vars := mux.Vars(r)
-    b,err := os.ReadFile(".database/song/" + vars["name"] + ".json")
-    if err != nil {
-        fmt.Println(err)
-    }
-    w.Write(b)
+func SongHandler() http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+        vars := mux.Vars(r)
+        b,err := os.ReadFile(".database/song/" + vars["name"] + ".json")
+        if err != nil {
+            fmt.Println(err)
+        }
+        w.Write(b)
+    })
 }

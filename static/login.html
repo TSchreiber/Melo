@@ -2,13 +2,58 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
+        <link rel="icon" href="/images/icons-192.png" type="image/png">
         <title>Login - Music Player</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     </head>
     <body>
+        <style>
+            :root {
+                font-family: 'Open Sans', sans-serif;
+                font-size: 18px;
+            }
+
+            * { box-sizing: border-box; }
+
+            body, html {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+            }
+
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            form, #register {
+                display: grid;
+                grid-auto-flow: row;
+                grid-gap: 25px;
+                width: 50ch;
+            }
+
+            input, button {
+                font-family: 'Open Sans', sans-serif;
+                font-size: 18px;
+                padding: 0.25em;
+                width: 100%;
+            }
+
+            #register {
+                margin-top: 25px;
+                text-decoration: none;
+            }
+        </style>
         <form class="" method="post">
-            <input name="username">
-            <input type="password" name="password">
+            <input name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
             <button type="submit">Login</button>
         </form>
+        <a href="/register" id="register"><button>Register</button></a>
     </body>
 </html>
