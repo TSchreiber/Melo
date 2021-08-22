@@ -11,13 +11,21 @@ import (
 )
 
 type VideoMetaData struct {
+    Title string
     Alt_Title string
+    Track string
+    Track_Number int
+    Track_ID string
     Artist string
     Creator string
+    Album string
+    Album_Type string
+    Album_Artist string
     Duration int
     ID string
-    Title string
-    Track string
+    Genre string
+    Disc_Number int
+    Release_Year int
 }
 
 /**
