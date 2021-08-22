@@ -17,17 +17,6 @@ func main() {
     log.Fatal(server.StartServer())
 }
 
-// func TestAddSong(db *scribble.Driver) {
-//     s := Song{
-//         MP3URL:"/song/Decapitation.mp3",
-//         ThumbnailURL:"https://img.youtube.com/vi/fN47i-0RO6w/0.jpg",
-//         Title:"Decapitation",
-//         Artist:"Piri"}
-//     if err := db.Write("songs", "Decapitation", s); err != nil {
-//         log.Fatal(err)
-//     }
-// }
-
 type Config struct {
 	Server ServerInfo
     Database DatabaseInfo
