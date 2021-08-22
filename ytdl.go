@@ -17,6 +17,7 @@ type VideoMetaData struct {
     Track_ID string
     Artist string
     Creator string
+    Uploader string
     Album string
     Album_Type string
     Album_Artist string
@@ -43,9 +44,16 @@ func GetVideoMetaData(videoID string, callback func(VideoMetaData, error)) {
     go func() {
         var vmd VideoMetaData
         r, _ := cmd.StdoutPipe()
-        b,_ := io.ReadAll(r)
-        err := json.Unmarshal(b, &vmd)
-        callback(vmd, err)
+        dec := json.NewDecoder(r)
+    	for {
+    		if err := dec.Decode(&vmd); err == io.EOF {
+    			break
+    		} else if err != nil {
+    			callback(vmd, err)
+    		}
+    	}
+        cmd.Wait()
+        callback(vmd, nil)
     }()
     cmd.Start()
 }
@@ -65,7 +73,9 @@ func (vmd VideoMetaData) GetArtist() string {
         return vmd.Artist
     } else if vmd.Album_Artist != "" {
         return vmd.Album_Artist
-    } else {
+    } else if vmd.Creator != ""{
         return vmd.Creator
+    } else {
+        return vmd.Uploader
     }
 }
