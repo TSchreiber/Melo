@@ -14,7 +14,7 @@ import (
     "io"
     "io/ioutil"
     "encoding/json"
-    "encoding/base64"
+    "encoding/base32"
     "math/rand"
 )
 
@@ -172,11 +172,11 @@ func SongHandler() http.HandlerFunc {
 func GenerateSongID() string {
     rand.Seed(time.Now().UnixNano())
     for i:=0; i<100; i++ {
-        b := make([]byte, 24)
+        b := make([]byte, 5)
         for i,_:= range b {
             b[i] = byte(rand.Int())
         }
-        id := base64.StdEncoding.EncodeToString(b)
+        id := base32.StdEncoding.EncodeToString(b)
         if _, err := os.Stat("/.database/song/" + id + ".json"); os.IsNotExist(err) {
             return id
         }

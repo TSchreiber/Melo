@@ -59,7 +59,7 @@ setInterval(() => {
 
 let song_list = {
     "container": document.querySelector(".song-list-container"),
-    "append": (name) => {
+    "append": (id, data) => {
         let el = document.createElement("div");
         el.classList.add("song-row");
         let play = document.createElement("button");
@@ -67,10 +67,10 @@ let song_list = {
         play.classList.add("material-icons");
         play.classList.add("md-dark");
         play.innerText = "play_arrow";
-        play.onclick = () => playSong(name)
+        play.onclick = () => playSong(id)
         let title = document.createElement("p");
         title.classList.add("song-title");
-        title.innerText = name;
+        title.innerText = data.Title;
         el.appendChild(play);
         el.appendChild(title);
         song_list.container.append(el);
@@ -80,8 +80,12 @@ let song_list = {
 fetch("/api/song")
 .then(res => res.json())
 .then(list => {
-    for (song_name of list) {
-        song_list.append(song_name);
+    for (id of list) {
+        fetch(`/api/song/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            song_list.append(id, data);
+        })
     }
 });
 
