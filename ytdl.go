@@ -7,7 +7,6 @@ import (
     "os/exec"
     "encoding/json"
     "io"
-    "fmt"
 )
 
 type VideoMetaData struct {
@@ -49,4 +48,24 @@ func GetVideoMetaData(videoID string, callback func(VideoMetaData, error)) {
         callback(vmd, err)
     }()
     cmd.Start()
+}
+
+func (vmd VideoMetaData) GetTitle() string {
+    if vmd.Track != "" {
+        return vmd.Track
+    } else if vmd.Alt_Title != "" {
+        return vmd.Alt_Title
+    } else {
+        return vmd.Title
+    }
+}
+
+func (vmd VideoMetaData) GetArtist() string {
+    if vmd.Artist != "" {
+        return vmd.Artist
+    } else if vmd.Album_Artist != "" {
+        return vmd.Album_Artist
+    } else {
+        return vmd.Creator
+    }
 }
