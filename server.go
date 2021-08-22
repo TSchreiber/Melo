@@ -16,6 +16,7 @@ import (
     "encoding/json"
     "encoding/base32"
     "math/rand"
+    "sync"
 )
 
 var store = sessions.NewCookieStore([]byte("passphrase"))
@@ -35,6 +36,7 @@ func NewServer(serverInfo ServerInfo, Database *scribble.Driver) *Server {
     router.Handle("/log", Authenticate(LogPost())).Methods("POST")
     router.Handle("/api/song", Authenticate(SongListHandler()))
     router.Handle("/api/song/{name}", Authenticate(SongHandler()))
+    router.Handle("/api/info/yt/{id}", AuthenticateFunc(YTMetaData)).Methods("GET")
     router.Handle("/", Authenticate(HomeGet()))
     router.PathPrefix("/song").Handler(Authenticate(
         http.FileServer(http.Dir("./static"))))
@@ -206,6 +208,26 @@ func SongPost(w http.ResponseWriter, r *http.Request) {
         fmt.Fprint(w, "400 - Malformed form data")
         return
     }
-    // fmt.Fprint(w, "")
     w.WriteHeader(http.StatusOK)
+}
+
+func YTMetaData(w http.ResponseWriter, r *http.Request) {
+    var wg sync.WaitGroup
+    wg.Add(1)
+    go func() {
+        GetVideoMetaData(mux.Vars(r)["id"], func(vmd VideoMetaData, err error){
+            if err != nil {
+                fmt.Printf("Getting video meta data failed,\n\t%s\n", err)
+                w.WriteHeader(http.StatusInternalServerError)
+                return
+            }
+            s := make(map[string]string)
+            s["Title"] = vmd.GetTitle()
+            s["Artist"] = vmd.GetArtist()
+            b,_ := json.Marshal(s)
+            fmt.Fprint(w, string(b))
+            wg.Done()
+        })
+    }()
+    wg.Wait()
 }
