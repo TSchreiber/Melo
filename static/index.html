@@ -53,58 +53,107 @@
                 <input id="volume-slider" type="range" min="0" max="100" value="50">
             </div>
         </div>
-
-        <form id="new-song-form" class="hidden" action="#">
-            <div>
-                <label for="NSF-Title">Title</label>
-                <input id="NSF-Title" name="Title">
+        <div id="foreground" class="hidden">
+            <div id="new-song-form" class="hidden">
+                <h2>New Song</h2>
+                <div class="NSF-button-container">
+                    <button id="NSF-YT" onclick="showYTForm()"><img src="/images/yticon.png"></img>YouTube</button>
+                    <button id="NSF-Manual" onclick="showManualForm()"><img src="/images/icons-192.png"></img>Manual</button>
+                </div>
+                <div class="NSF-input-container NSF-manual-input">
+                    <label for="NSF-Title">Title</label>
+                    <input id="NSF-Title" name="Title" autocomplete="off">
+                </div>
+                <div class="NSF-input-container NSF-manual-input">
+                    <label for="NSF-Title">MP3 URL</label>
+                    <input id="NSF-mp3" name="MP3URL" autocomplete="off">
+                </div>
+                <div class="NSF-input-container NSF-manual-input">
+                    <label for="NSF-Title">Thumbnail URL</label>
+                    <input id="NSF-thumb" name="ThumbnailURL" autocomplete="off">
+                </div>
+                <div class="NSF-input-container NSF-manual-input">
+                    <label for="NSF-Title">Artist</label>
+                    <input id="NSF-artist" name="Artist" autocomplete="off">
+                </div>
+                <div class="NSF-input-container NSF-manual-input">
+                    <label for="NSF-Title">Album</label>
+                    <input id="NSF-album" name="Album" autocomplete="off">
+                </div>
+                <button class="NSF-submit NSF-manual-input" type="submit" onclick="submitNewSongForm()">Add</button>
+                <div class="NSF-input-container NSF-YT-input hidden">
+                    <label for="NSF-vid">Video ID</label>
+                    <input id="NSF-vid" name="VID" autocomplete="off" minlength="11" maxlength="11">
+                </div>
+                <button class="NSF-submit NSF-YT-input hidden" type="submit" onclick="submitYTVID()">Get Video Info</button>
             </div>
-            <div>
-                <label for="NSF-Title">MP3 URL</label>
-                <input id="NSF-mp3" name="MP3URL">
-            </div>
-            <div>
-                <label for="NSF-Title">Thumbnail URL</label>
-                <input id="NSF-thumb" name="ThumbnailURL">
-            </div>
-            <div>
-                <label for="NSF-Title">Artist</label>
-                <input id="NSF-artist" name="Artist">
-            </div>
-            <div>
-                <label for="NSF-Title">Album</label>
-                <input id="NSF-album" name="Album">
-            </div>
-            <button type="submit" onclick="submitNewSongForm()">Add</button>
-        </form>
+        </div>
     </body>
     <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');</script>
     <script>
         function showNewSongForm() {
+            document.getElementById("foreground").classList.remove("hidden");
             document.getElementById("new-song-form").classList.remove("hidden");
         }
 
+        function showYTForm() {
+            for (e of document.getElementsByClassName("NSF-manual-input")) {
+                e.classList.add("hidden");
+            }
+            for (e of document.getElementsByClassName("NSF-YT-input")) {
+                e.classList.remove("hidden");
+            }
+        }
+
+        function showManualForm() {
+            for (e of document.getElementsByClassName("NSF-YT-input")) {
+                e.classList.add("hidden");
+            }
+            for (e of document.getElementsByClassName("NSF-manual-input")) {
+                e.classList.remove("hidden");
+            }
+        }
+
+        function submitYTVID() {
+            let vid = document.getElementById("NSF-vid").value;
+            fetch(`/api/yt/${vid}`)
+            .then(res => res.json())
+            .then((data) => {
+               showManualForm();
+               document.getElementById("NSF-Title").value = data.Title;
+               document.getElementById("NSF-mp3").value = `song/${vid}.mp3`;
+               document.getElementById("NSF-thumb").value = `https://img.youtube.com/vi/${vid}/0.jpg`;
+               document.getElementById("NSF-artist").value = data.Artist;
+               document.getElementById("NSF-album").value = data.Album;
+            });
+        }
+
         function submitNewSongForm(e) {
-            let title = document.getElementById("NSF-Title").value;
-            let mp3url = document.getElementById("NSF-mp3").value;
-            let thumb = document.getElementById("NSF-thumb").value;
-            let artist = document.getElementById("NSF-artist").value;
             fetch("/new-song", {
                 "method": "POST",
                 "body": JSON.stringify({
-                    "Title": title,
-                    "MP3URL": mp3url,
-                    "ThumbnailURL": thumb,
-                    "Artist": artist
+                    "Title": document.getElementById("NSF-Title").value,
+                    "MP3URL": document.getElementById("NSF-mp3").value,
+                    "ThumbnailURL": document.getElementById("NSF-thumb").value,
+                    "Artist": document.getElementById("NSF-artist").value,
+                    "Album": document.getElementById("NSF-album").value
                 })
             })
             .then( (res) => {
                 if (res.ok) {
+                    document.getElementById("foreground").classList.add("hidden")
                     document.getElementById("new-song-form").classList.add("hidden")
                 } else {
                     console.log(res.statusText)
                 }
             })
+            let vid = document.getElementById("NSF-vid").value;
+            if (vid.length > 0) {
+                fetch(`/api/yt/${vid}`, {
+                    "method": "POST",
+                    "body": vid
+                })
+            }
         }
     </script>
 </html>

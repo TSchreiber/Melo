@@ -7,6 +7,7 @@ import (
     "os/exec"
     "encoding/json"
     "io"
+    "fmt"
 )
 
 type VideoMetaData struct {
@@ -78,4 +79,19 @@ func (vmd VideoMetaData) GetArtist() string {
     } else {
         return vmd.Uploader
     }
+}
+
+func DownloadVideo(vid string) {
+    cmd := exec.Command("youtube-dl", "-o", `./static/song/%(id)s.%(ext)s`, "--extract-audio", "--audio-format", "mp3", vid)
+    go func() {
+        r, _ := cmd.StdoutPipe()
+        e, _ := cmd.StderrPipe()
+        cmd.Wait()
+        b, _ := io.ReadAll(r)
+        fmt.Println(string(b))
+        b, _ = io.ReadAll(e)
+        fmt.Println(string(b))
+        fmt.Println("Done.")
+    }()
+    cmd.Start()
 }

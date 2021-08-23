@@ -7,8 +7,15 @@ body {
     overflow: hidden;
 }
 
-button { border: none; background: none; }
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: "Open Sans", sans-serif;
+}
 a { text-decoration: none; color: unset; }
+input { font-size: 1rem; }
 
 .material-icons-outlined.md-dark { color: white; }
 .material-icons.md-dark { color: white; }
