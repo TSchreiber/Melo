@@ -11,42 +11,67 @@
     </head>
     <body>
         <style>
-            :root {
-                font-family: 'Open Sans', sans-serif;
-                font-size: 18px;
-            }
+        :root {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 18px;
 
-            body, html {
-                width: 100%;
-                height: 100%;
-                margin: 0;
-            }
+        }
 
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
+        * { box-sizing: border-box; }
 
-            form {
-                display: grid;
-                grid-auto-flow: row;
-                grid-gap: 25px;
-                width: 50ch;
-                max-width: 90%;
-                margin: auto;
-            }
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
 
-            input, button {
-                font-family: 'Open Sans', sans-serif;
-                font-size: 18px;
-                padding: 0.25em;
-            }
+        body {
+            background-image: linear-gradient(#191925,#303040);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5em;
+            background: hsl(240,21%,92%);
+            max-width: 90%;
+            border-radius: 5px;
+        }
+
+        form, #register {
+            display: grid;
+            grid-auto-flow: row;
+            grid-gap: 25px;
+            width: 32ch;
+        }
+
+        input, button {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 18px;
+            padding: 0.25em;
+            width: 100%;
+            border-radius: 5px;
+            background-color: white;
+            border: solid rgb(118, 118, 118) 1px;
+        }
         </style>
-        <form class="" method="post">
-            <input name="username" placeholder="Username">
-            <input type="password" name="password" placeholder="Password">
-            <button type="submit">Register</button>
-        </form>
+        <div class="container">
+            <form class="" method="post">
+                <div>
+                    <label for="username">Username</label>
+                    <input id="username" name="username">
+                </div>
+                <div>
+                    <label for="password">Password</label>
+                    <input id="password" type="password" name="password">
+                </div>
+                <button type="submit">Register</button>
+            </form>
+        </div>
     </body>
 </html>
