@@ -4,9 +4,16 @@ let song_list = {
         let el = document.createElement("div");
         song_list.container.append(el);
         el.classList.add("song-row");
-        el.onclick = () => playSong(id);
+        el.onclick = (e) => {
+            if (e.target.innerText === "queue_music") {
+                queue.push(data);
+            } else {
+                playSong(id);
+            }
+        }
         el.innerHTML = `
             <button class="material-icons md-dark">play_arrow</button>
+            <button class="material-icons md-dark">queue_music</button>
             <img src="${data.ThumbnailURL}"></img>
             <p>${data.Title || ""}</p>
             <p>${data.Artist || ""}</p>
@@ -24,7 +31,6 @@ fetch("/api/song")
         .then(data => {
             data.id = id;
             song_list.append(id, data);
-            queue.push(data)
         })
     })
 });

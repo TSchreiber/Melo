@@ -101,7 +101,7 @@ input[type=range]:hover::-webkit-slider-thumb {
 .song-row {
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 1.5em 4em repeat(3, 1fr);
+    grid-template-columns: 1.5em 1.5em 4em repeat(3, 1fr);
     grid-gap: 1em;
     align-items: center;
     margin: 0.5em 0;
@@ -112,7 +112,7 @@ input[type=range]:hover::-webkit-slider-thumb {
     width: 100%;
     object-fit: contain;
 }
-.song-row:hover button {
+.song-row button:hover {
     color: #219bc4;
 }
 
