@@ -2,8 +2,16 @@ var queue = {
     "element": document.getElementById("queue-container"),
     "peek": () => queue.current.next,
     "peekBack": () => queue.current.prev,
-    "next": () => queue.current = queue.peek(),
-    "prev": () => queue.current = queue.peekBack(),
+    "next": () => {
+        queue.current.element.classList.remove("current-song");
+        queue.current = queue.peek();
+        queue.current.element.classList.add("current-song");
+    },
+    "prev": () => {
+        queue.current.element.classList.remove("current-song");
+        queue.current = queue.peekBack();
+        queue.current.element.classList.add("current-song");
+    },
     "remove": (node) => {
         if (node.prev) node.prev.next = node.next;
         if (node.next) node.next.prev = node.prev;
@@ -38,6 +46,7 @@ var queue = {
             queue.current = o;
             if (!player.element.currentSrc) {
                 player.setSong(queue.current.song);
+                queue.current.element.classList.add("current-song");
             }
         } else {
             queue.last.next = o;

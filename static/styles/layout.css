@@ -196,6 +196,11 @@ input[type=range]:hover::-webkit-slider-thumb {
     font-weight: normal;
 }
 
+#queue-container .current-song,
+#queue-container .current-song .material-icons.md-dark {
+    color: #41b8df;
+}
+
 #add-song-container {
     box-sizing: border-box;
     display: grid;

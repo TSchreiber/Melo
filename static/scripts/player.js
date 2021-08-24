@@ -35,19 +35,21 @@ player.controls.play.onclick = () => {
 
 player.controls.previous.addEventListener("click", () => {
     if (queue.peekBack()) {
-        playSong(queue.prev().song);
+        queue.prev();
+        player.playSong(queue.current.song);
     }
 })
 
 player.controls.next.addEventListener("click", () => {
     if (queue.peek()) {
-        playSong(queue.next().song);
+        queue.next();
+        player.playSong(queue.current.song);
     }
 })
 
 player.element.addEventListener("ended", () => {
     if (queue.peek()) {
-        playSong(queue.next().song)
+        player.playSong(queue.next().song)
     }
 })
 
