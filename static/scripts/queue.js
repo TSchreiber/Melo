@@ -36,6 +36,9 @@ var queue = {
         if (!queue.current) {
             queue.last = o;
             queue.current = o;
+            if (!player.element.currentSrc) {
+                player.setSong(queue.current.song);
+            }
         } else {
             queue.last.next = o;
             queue.last = o;

@@ -35,19 +35,19 @@ player.controls.play.onclick = () => {
 
 player.controls.previous.addEventListener("click", () => {
     if (queue.peekBack()) {
-        playSong(queue.prev().song.id);
+        playSong(queue.prev().song);
     }
 })
 
 player.controls.next.addEventListener("click", () => {
     if (queue.peek()) {
-        playSong(queue.next().song.id);
+        playSong(queue.next().song);
     }
 })
 
 player.element.addEventListener("ended", () => {
     if (queue.peek()) {
-        playSong(queue.next().song.id)
+        playSong(queue.next().song)
     }
 })
 
@@ -75,16 +75,16 @@ setInterval(() => {
     player.controls.progress.children[0].style.right = sRight;
 }, 40)
 
-function playSong(songID) {
-    fetch(`/api/song/${songID}`)
-    .then( res => res.json() )
-    .then( data => {
-        player.element.pause();
-        player.source.setAttribute("src",data.MP3URL);
-        player.element.load();
-        player.element.play();
-        player.info.thumbnail.src = data.ThumbnailURL;
-        player.info.title.innerText = data.Title;
-        player.info.artist.innerText = data.Artist;
-    });
+player.setSong = (song) => {
+    player.element.pause();
+    player.source.setAttribute("src",song.MP3URL);
+    player.element.load();
+    player.info.thumbnail.src = song.ThumbnailURL;
+    player.info.title.innerText = song.Title;
+    player.info.artist.innerText = song.Artist;
+}
+
+player.playSong = (song) => {
+    player.setSong(song);
+    player.element.play();
 }

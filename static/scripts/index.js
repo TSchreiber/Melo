@@ -8,7 +8,7 @@ let song_list = {
             if (e.target.innerText === "queue_music") {
                 queue.push(data);
             } else {
-                playSong(id);
+                player.playSong(data);
             }
         }
         el.innerHTML = `
