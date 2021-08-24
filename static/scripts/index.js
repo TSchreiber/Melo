@@ -1,20 +1,17 @@
 let song_list = {
-    "container": document.querySelector(".song-list-container"),
+    "container": document.querySelector(".song-rows-container"),
     "append": (id, data) => {
         let el = document.createElement("div");
-        el.classList.add("song-row");
-        let play = document.createElement("button");
-        play.classList.add("song-play-button");
-        play.classList.add("material-icons");
-        play.classList.add("md-dark");
-        play.innerText = "play_arrow";
-        play.onclick = () => playSong(id)
-        let title = document.createElement("p");
-        title.classList.add("song-title");
-        title.innerText = data.Title;
-        el.appendChild(play);
-        el.appendChild(title);
         song_list.container.append(el);
+        el.classList.add("song-row");
+        el.onclick = () => playSong(id);
+        el.innerHTML = `
+            <button class="material-icons md-dark">play_arrow</button>
+            <img src="${data.ThumbnailURL}"></img>
+            <p>${data.Title || ""}</p>
+            <p>${data.Artist || ""}</p>
+            <p>${data.Album || ""}</p>
+        `;
     }
 }
 
@@ -22,7 +19,6 @@ fetch("/api/song")
 .then(res => res.json())
 .then(list => {
     list.forEach( (id) => {
-    // for (id of list) {
         fetch(`/api/song/${id}`)
         .then(res => res.json())
         .then(data => {
@@ -44,3 +40,9 @@ fetch("/api/song")
         }
     }
 })();
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "MediaPlayPause") {
+        player.controls.play.dispatchEvent(new Event("click"));
+    }
+});
