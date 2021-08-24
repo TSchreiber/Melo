@@ -120,9 +120,39 @@ input[type=range]:hover::-webkit-slider-thumb {
 }
 
 .side-bar {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-rows: 1fr auto;
+    padding: 1em;
+}
+
+#queue-title {
+    display: grid;
+    grid-template-columns: 1em auto 2fr;
+    align-items: center;
+    grid-gap: 12.5px;
+}
+#queue-title div {
+    background: #219bc4;
+    height: 1px;
+}
+#queue-title h6 {
+    margin: 0;
+    color: #219bc4;
+    letter-spacing: 1.5px;
+    user-select: none;
+}
+
+#queue-container .queue-entry {
+    margin: 1em;
+}
+#queue-container .queue-entry h6 {
+    font-size: 0.85rem;
+    font-weight: normal;
+}
+#queue-container .queue-entry h5 {
+    font-size: 1rem;
+    font-weight: normal;
 }
 
 #add-song-container {
@@ -135,8 +165,6 @@ input[type=range]:hover::-webkit-slider-thumb {
     background: hsl(240,14%,28%);
     padding: 10px;
     border-radius: 5px;
-    width: 100%;
-    margin: 10px;
 }
 
 #add-song-container:hover {
