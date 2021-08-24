@@ -100,4 +100,10 @@
         </div>
     </body>
     <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');</script>
+    <script defer>
+        setTimeout(() => {
+            player.controls.volume.value = 50;
+            player.controls.volume.dispatchEvent(new Event("input"));
+        }, 0);
+    </script>
 </html>

@@ -144,7 +144,10 @@ input[type=range]:hover::-webkit-slider-thumb {
 }
 
 #queue-container .queue-entry {
-    margin: 1em;
+    margin: 1em 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 0.5em;
 }
 #queue-container .queue-entry h6 {
     font-size: 0.85rem;
