@@ -20,7 +20,7 @@ video { display: none; }
 }
 #controls-main { grid-area: main; }
 #controls-side { grid-area: side; }
-#controls-progress { grid-area: prog; }
+#progress-container { grid-area: prog; }
 
 #controls-side {
     display: flex;
@@ -33,11 +33,10 @@ video { display: none; }
 input[type=range] {
     background-image: linear-gradient(var(--fill-color), var(--fill-color)),
                       linear-gradient(var(--background), var(--background));
-    background-size: 50%, 100%;
+    background-size: 0%, 100%;
     background-repeat: no-repeat;
     border-radius: 8px;
     height: 4px;
-    width: 112px;
     outline: none;
     -webkit-appearance: none;
 }
@@ -53,6 +52,10 @@ input[type=range]::-webkit-slider-thumb {
 }
 input[type=range]:hover::-webkit-slider-thumb {
   display: block;
+}
+
+#volume-slider {
+    width: 112px;
 }
 
 #control-bar {
@@ -116,18 +119,23 @@ input[type=range]:hover::-webkit-slider-thumb {
     color: #219bc4;
 }
 
+#progress-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
 .progress-bar {
     width: min(80%, 554px);
-    height: 5px;
-    margin: 10px auto 10px auto;
+    margin: 0 0.5em;
     position: relative;
 }
 
-.progress-bar--inner {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    right: 100%;
+#progress-right,
+#progress-left {
+    color: white;
+    font-size: 0.85rem;
 }
 
 @media only screen and (max-width: 792px) {

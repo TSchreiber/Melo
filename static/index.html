@@ -60,8 +60,10 @@
                 <button class="control-button play-button material-icons md-dark">play_circle</button>
                 <button class="control-button next-button material-icons md-dark">skip_next</button>
             </div>
-            <div id="controls-progress" class=progress-container>
-                <div class="progress-bar"><div class="progress-bar--inner"></div></div>
+            <div id="progress-container">
+                <p id="progress-left">00:00</p>
+                <input id="controls-progress" class="progress-bar" type="range" value="0" step="0.1"/>
+                <p id="progress-right">00:00</p>
             </div>
             <div id="controls-side">
                 <button id="mute-button" class="control-button volume-slider material-icons md-dark">volume_up</button>

@@ -70,12 +70,38 @@ player.element.addEventListener("volumechange", () => {
         player.controls.mute.innerText = "volume_mute";
 });
 
-setInterval(() => {
-    let progress = player.element.currentTime / player.element.duration;
-    let nRight = (1 - progress) * 100;
-    let sRight = nRight + "%"
-    player.controls.progress.children[0].style.right = sRight;
-}, 40)
+player.element.addEventListener("durationchange", () => {
+    player.controls.progress.value = 0;
+    player.controls.progress.max = player.element.duration;
+});
+
+function timeToString(t) {
+    // catches null, undefined, NaN, and 0
+    // although 0 is a real value that should be treated properly, this is
+    // returning the desired output anyways, so there's no need to check for it.
+    if (!t) return "00:00";
+    min = Math.floor(t / 60) + "";
+    sec = Math.floor(t % 60) + "";
+    if (sec.length == 1) sec = "0" + sec;
+    return min + ":" + sec;
+}
+player.element.addEventListener("timeupdate", () => {
+    player.controls.progress.value = player.element.currentTime;;
+    let e = new Event("input");
+    e.causedByTimeUpdate = true;
+    player.controls.progress.dispatchEvent(e);
+
+    let t = Math.floor(player.element.currentTime);
+    let d = player.element.duration;
+    document.getElementById("progress-left").innerText = timeToString(t);
+    document.getElementById("progress-right").innerText = timeToString(d - t);
+});
+
+player.controls.progress.addEventListener("input", (e) => {
+    if (!e.causedByTimeUpdate) {
+        player.element.currentTime = player.controls.progress.value;
+    }
+});
 
 player.setSong = (song) => {
     player.element.pause();

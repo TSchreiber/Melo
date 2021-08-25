@@ -2,12 +2,6 @@
 .content-container { background: #191927; }
 .info-container { background: #262634; }
 .side-bar { background-image: linear-gradient(#191925,#303040); }
-.progress-bar {
-    background: #4D4D4F;
-    border-radius: 5px;
-    overflow: hidden;
-}
-.progress-bar--inner { background: #41B8DF; }
 
 input[type=range] {
     --background: #4D4D4F;
