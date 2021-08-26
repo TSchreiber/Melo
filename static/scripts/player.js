@@ -49,7 +49,8 @@ player.controls.next.addEventListener("click", () => {
 
 player.element.addEventListener("ended", () => {
     if (queue.peek()) {
-        player.playSong(queue.next().song)
+        queue.next()
+        player.playSong(queue.current.song)
     }
 })
 
