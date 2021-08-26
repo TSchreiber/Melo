@@ -225,6 +225,7 @@ func YTMetaData(w http.ResponseWriter, r *http.Request) {
             s := make(map[string]string)
             s["Title"] = vmd.GetTitle()
             s["Artist"] = vmd.GetArtist()
+            s["Album"] = vmd.Album
             b,_ := json.Marshal(s)
             fmt.Fprint(w, string(b))
             wg.Done()
