@@ -59,8 +59,8 @@ var queue = {
         el.innerHTML = `
              <p class="material-icons md-dark">drag_handle</p>
              <div>
-                 <h5>${song.Title}</h5>
-                 <h6>${song.Artist}</h6>
+                 <h5>${song.title}</h5>
+                 <h6>${song.artist}</h6>
              </div>`;
          el.draggable = true;
          el.classList.add("queue-entry")

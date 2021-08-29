@@ -1,31 +1,25 @@
 package main
 
 import (
+    "encoding/json"
     "fmt"
-    "log"
-    "net/http"
-    scribble "github.com/nanobox-io/golang-scribble"
     "github.com/gorilla/mux"
     "github.com/gorilla/sessions"
+    "go.mongodb.org/mongo-driver/bson"
     "golang.org/x/crypto/bcrypt"
-    "os"
-    "time"
-    "strings"
     "io"
-    "io/ioutil"
-    "encoding/json"
-    "encoding/base32"
-    "math/rand"
+    "log"
+    "net/http"
+    "strings"
     "sync"
+    "time"
 )
 
 var store = sessions.NewCookieStore([]byte("passphrase"))
-var DB *scribble.Driver
 
-func NewServer(serverInfo ServerInfo, Database *scribble.Driver) *Server {
+func NewServer(serverInfo ServerInfo) *Server {
     router := mux.NewRouter()
-    server := Server{serverInfo, router, Database}
-    DB = Database
+    server := Server{serverInfo, router}
 
     router.HandleFunc("/login", LoginGet).Methods("GET")
     router.HandleFunc("/login", LoginPost).Methods("POST")
@@ -34,8 +28,8 @@ func NewServer(serverInfo ServerInfo, Database *scribble.Driver) *Server {
     router.Handle("/new-song", AuthenticateFunc(SongPost)).Methods("POST")
 
     router.Handle("/log", Authenticate(LogPost())).Methods("POST")
-    router.Handle("/api/song", Authenticate(SongListHandler()))
-    router.Handle("/api/song/{name}", Authenticate(SongHandler()))
+    router.Handle("/api/song", Authenticate(SongHandler()))
+    router.Handle("/api/song/{oid}", Authenticate(SongHandler()))
     router.Handle("/api/yt/{id}", AuthenticateFunc(YTMetaData)).Methods("GET")
     router.Handle("/api/yt/{id}", AuthenticateFunc(YTDownload)).Methods("POST")
     router.Handle("/", Authenticate(HomeGet()))
@@ -48,7 +42,6 @@ func NewServer(serverInfo ServerInfo, Database *scribble.Driver) *Server {
 type Server struct {
     serverInfo ServerInfo
     router *mux.Router
-    DB *scribble.Driver
 }
 
 func (server *Server) StartServer() error {
@@ -78,9 +71,15 @@ func LoginPost(w http.ResponseWriter, r *http.Request) {
     r.ParseForm()
     username := r.PostForm.Get("username")
     password := r.PostForm.Get("password")
-    var hash string
-    DB.Read("users", username, &hash)
-    if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
+    res := Database.Collection("user").FindOne(DBContext,
+        map[string]string{"username": username})
+    userInfo := struct { Hash string }{}
+    err := res.Decode(&userInfo)
+    if err != nil {
+        fmt.Printf("Failed parsing user info:\n%s\n", err)
+        return
+    }
+    if err = bcrypt.CompareHashAndPassword([]byte(userInfo.Hash), []byte(password)); err != nil {
         return
     }
 
@@ -99,7 +98,11 @@ func RegisterPost(w http.ResponseWriter, r *http.Request) {
     username := r.PostForm.Get("username")
     password := r.PostForm.Get("password")
     hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-    DB.Write("users", username, string(hash))
+    _, err := Database.Collection("user").InsertOne(DBContext,
+        map[string]string{"username": username, "hash": string(hash)})
+    if err != nil {
+        fmt.Println(err);
+    }
     http.Redirect(w, r, "/login", 302)
 }
 
@@ -145,47 +148,55 @@ func AuthenticateFunc(next func (w http.ResponseWriter, r *http.Request)) http.H
 
 func SongListHandler() http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        files, err := ioutil.ReadDir(".database/song")
-        names := make([]string, len(files))
+        cursor, err := Database.Collection("song").Aggregate(DBContext,
+            []bson.M{bson.M{"$sample": bson.M{"size": 25}}} )
         if err != nil {
-            fmt.Println(err)
+            fmt.Printf("Error in sample request:\n%s\n", err)
             w.WriteHeader(http.StatusInternalServerError)
-            fmt.Fprint(w, "500 - Internal server error")
-        } else {
-            for i,file := range files {
-                name := fmt.Sprintf(`"%s"`, file.Name()[:len(file.Name())-5])
-                names[i] = name
-            }
-            fmt.Fprintf(w, `[%s]`, strings.Join(names, ", "))
         }
+        var res []bson.M
+        err = cursor.All(DBContext, &res)
+        if err != nil {
+            fmt.Printf("Failed getting song sample:\n%s\n", err)
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
+        b, err := json.Marshal(res)
+        if err != nil {
+            fmt.Printf("Failed marshaling sample data:\n%s\n", err)
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
+        fmt.Fprint(w,string(b))
     })
 }
 
 func SongHandler() http.HandlerFunc {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
         vars := mux.Vars(r)
-        b,err := os.ReadFile(".database/song/" + vars["name"] + ".json")
-        if err != nil {
-            fmt.Println(err)
-        }
-        w.Write(b)
-    })
-}
+        if len(vars) > 0 {
+            var s Song
+            Database.Collection("song").FindOne(DBContext, bson.M{"_id": vars["oid"]}).Decode(&s)
+            b,_ := json.Marshal(s)
+            fmt.Fprint(w, string(b))
+        } else {
+            if len(r.URL.RawQuery) > 0 {
+                cursor, err := Database.Collection("song").Find(DBContext, bson.M{"$text": bson.M{"$search": r.URL.RawQuery}})
+                if err != nil {
+                    fmt.Printf("Error searching database:\n%s\n", err)
+                    w.WriteHeader(http.StatusInternalServerError)
+                    return
+                }
+                var res []bson.M
+                cursor.All(DBContext, &res)
+                b,_ := json.Marshal(res)
+                fmt.Fprint(w, string(b))
 
-func GenerateSongID() string {
-    rand.Seed(time.Now().UnixNano())
-    for i:=0; i<100; i++ {
-        b := make([]byte, 5)
-        for i,_:= range b {
-            b[i] = byte(rand.Int())
+            } else {
+                SongListHandler()(w,r)
+            }
         }
-        id := base32.StdEncoding.EncodeToString(b)
-        if _, err := os.Stat("/.database/song/" + id + ".json"); os.IsNotExist(err) {
-            return id
-        }
-        fmt.Println(id)
-    }
-    return ""
+    })
 }
 
 func SongPost(w http.ResponseWriter, r *http.Request) {
@@ -203,7 +214,7 @@ func SongPost(w http.ResponseWriter, r *http.Request) {
         fmt.Fprint(w, "400 - Malformed form data")
         return
     }
-    if err = DB.Write("song", GenerateSongID(), song); err != nil {
+    if _,err = Database.Collection("song").InsertOne(DBContext, &song); err != nil {
         fmt.Printf("Failed to write to database,\n%s\n", err)
         w.WriteHeader(http.StatusBadRequest)
         fmt.Fprint(w, "400 - Malformed form data")

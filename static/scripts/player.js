@@ -105,11 +105,11 @@ player.controls.progress.addEventListener("input", (e) => {
 
 player.setSong = (song) => {
     player.element.pause();
-    player.source.setAttribute("src",song.MP3URL);
+    player.source.setAttribute("src",song.mp3url);
     player.element.load();
-    player.info.thumbnail.src = song.ThumbnailURL;
-    player.info.title.innerText = song.Title;
-    player.info.artist.innerText = song.Artist;
+    player.info.thumbnail.src = song.thumbnailurl;
+    player.info.title.innerText = song.title;
+    player.info.artist.innerText = song.artist;
 }
 
 player.playSong = (song) => {
