@@ -1,5 +1,10 @@
 let song_list = {
     "container": document.querySelector(".song-rows-container"),
+    "clear": () => {
+        while (song_list.container.firstChild) {
+            song_list.container.removeChild(song_list.container.lastChild);
+        }
+    },
     "append": (id, data) => {
         let el = document.createElement("div");
         song_list.container.append(el);
@@ -14,25 +19,39 @@ let song_list = {
         el.innerHTML = `
             <button class="material-icons md-dark">play_arrow</button>
             <button class="material-icons md-dark">queue_music</button>
-            <img src="${data.ThumbnailURL}"></img>
-            <p>${data.Title || ""}</p>
-            <p>${data.Artist || ""}</p>
-            <p>${data.Album || ""}</p>
+            <img src="${data.thumbnailurl}"></img>
+            <p>${data.title || ""}</p>
+            <p>${data.artist || ""}</p>
+            <p>${data.album || ""}</p>
         `;
     }
 }
 
-fetch("/api/song")
-.then(res => res.json())
-.then(list => {
-    list.forEach( (id) => {
-        fetch(`/api/song/${id}`)
-        .then(res => res.json())
-        .then(data => {
-            data.id = id;
-            song_list.append(id, data);
-        })
-    })
+function setSongsFromURL(url) {
+    fetch(url)
+    .then(res => res.json())
+    .then(json => {
+        song_list.clear();
+        if (json) {
+            json.forEach((song) => {
+                song.id = song._id;
+                song_list.append(song.id, song);
+            })
+        }
+    });
+}
+
+function getRandomSongSample() {
+    setSongsFromURL("/api/song");
+}
+getRandomSongSample();
+
+document.getElementById("search").addEventListener("input", (e) => {
+    if (e.target.value) {
+        setSongsFromURL(`/api/song?${e.target.value}`)
+    } else {
+        setSongsFromURL("/api/song");
+    }
 });
 
 /**

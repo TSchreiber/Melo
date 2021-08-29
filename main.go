@@ -4,22 +4,33 @@ import (
 	"log"
 	"encoding/json"
 	"os"
-    scribble "github.com/nanobox-io/golang-scribble"
+	"go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo/options"
+	// "go.mongodb.org/mongo-driver/mongo/readpref"
+	"context"
+	"time"
 )
+
+var Database *mongo.Database
+var DBContext context.Context
 
 func main() {
     config := ParseConfig()
-    db, err := scribble.New(config.Database.Filepath, nil)
-    if err != nil {
-        panic(err)
-    }
-    server := NewServer(config.Server, db)
+	DBContext, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(DBContext, options.Client().ApplyURI("mongodb://localhost:27017"))
+	defer func() {
+	    if err = client.Disconnect(DBContext); err != nil {
+	        panic(err)
+	    }
+	}()
+	Database = client.Database("TSchreiber_Music-Player")
+	server := NewServer(config.Server)
     log.Fatal(server.StartServer())
 }
 
 type Config struct {
 	Server ServerInfo
-    Database DatabaseInfo
 }
 
 type ServerInfo struct {
@@ -27,10 +38,6 @@ type ServerInfo struct {
 }
 func (server ServerInfo) GetURL() string {
 	return server.Host + ":" + server.Port
-}
-
-type DatabaseInfo struct {
-    Filepath string
 }
 
 func ParseConfig() Config {
