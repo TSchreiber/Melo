@@ -1,5 +1,10 @@
 let song_list = {
     "container": document.querySelector(".song-rows-container"),
+    "clear": () => {
+        while (song_list.container.firstChild) {
+            song_list.container.removeChild(song_list.container.lastChild);
+        }
+    },
     "append": (id, data) => {
         let el = document.createElement("div");
         song_list.container.append(el);
@@ -22,14 +27,31 @@ let song_list = {
     }
 }
 
-fetch("/api/song")
-.then(res => res.json())
-.then(json => {
-    json.forEach((song) => {
-        song.id = song._id;
-        for (let i=0; i<10; i++)
-        song_list.append(song.id, song);
-    })
+function setSongsFromURL(url) {
+    fetch(url)
+    .then(res => res.json())
+    .then(json => {
+        song_list.clear();
+        if (json) {
+            json.forEach((song) => {
+                song.id = song._id;
+                song_list.append(song.id, song);
+            })
+        }
+    });
+}
+
+function getRandomSongSample() {
+    setSongsFromURL("/api/song");
+}
+getRandomSongSample();
+
+document.getElementById("search").addEventListener("input", (e) => {
+    if (e.target.value) {
+        setSongsFromURL(`/api/song?${e.target.value}`)
+    } else {
+        setSongsFromURL("/api/song");
+    }
 });
 
 /**
