@@ -3,7 +3,7 @@ body {
     overflow: hidden;
     grid-template-areas: "side-bar content" "info controls";
     grid-template-columns: clamp(24ch, 32ch, 40ch) 1fr;
-    grid-template-rows: calc(100vh - 84px) 84px;
+    grid-template-rows: 1fr auto
 }
 .control-bar { grid-area: controls; }
 .info-container { grid-area: info; }
@@ -100,6 +100,7 @@ input[type=range]:hover::-webkit-slider-thumb {
 .song-rows-container {
     overflow: scroll;
     height: 100%;
+    position: absolute;
 }
 .song-row {
     display: grid;
@@ -163,13 +164,16 @@ input[type=range]:hover::-webkit-slider-thumb {
 .side-bar {
     display: grid;
     grid-auto-flow: row;
-    grid-template-rows: calc(100% - 44px) 44px;
+    grid-template-rows: auto 1fr auto;
     padding: 1em;
+    position: relative;
 }
 
 #queue-container {
-    margin-bottom: 1em;
     overflow-y: scroll;
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 #queue-title {
