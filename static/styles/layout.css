@@ -119,6 +119,11 @@ input[type=range]:hover::-webkit-slider-thumb {
 .song-row button:hover {
     color: #219bc4;
 }
+.song-row p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 #progress-container {
     display: flex;
