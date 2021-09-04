@@ -178,6 +178,10 @@ input[type=range]:hover::-webkit-slider-thumb {
         grid-template-areas: "content" "info" "controls";
         grid-template-columns: 1fr;
     }
+
+    .side-bar {
+        display: none !important;
+    }
 }
 
 .side-bar {
