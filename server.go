@@ -25,13 +25,12 @@ func NewServer(serverInfo ServerInfo) *Server {
     router.HandleFunc("/login", LoginPost).Methods("POST")
     router.HandleFunc("/register", RegisterGet).Methods("GET")
     router.HandleFunc("/register", RegisterPost).Methods("POST")
-    router.Handle("/new-song", AuthenticateFunc(SongPost)).Methods("POST")
 
     router.Handle("/log", Authenticate(LogPost())).Methods("POST")
     router.Handle("/api/song", Authenticate(SongHandler()))
     router.Handle("/api/song/{oid}", Authenticate(SongHandler()))
     router.Handle("/api/yt/{id}", AuthenticateFunc(YTMetaData)).Methods("GET")
-    router.Handle("/api/yt/{id}", AuthenticateFunc(YTDownload)).Methods("POST")
+    router.Handle("/api/yt", AuthenticateFunc(SongPost)).Methods("POST")
     router.Handle("/", Authenticate(HomeGet()))
     router.PathPrefix("/song").Handler(Authenticate(
         http.FileServer(http.Dir("./static"))))
@@ -214,13 +213,13 @@ func SongPost(w http.ResponseWriter, r *http.Request) {
         fmt.Fprint(w, "400 - Malformed form data")
         return
     }
+    DownloadVideo(song.DownloadURL, w, &song)
     if _,err = Database.Collection("song").InsertOne(DBContext, &song); err != nil {
         fmt.Printf("Failed to write to database,\n%s\n", err)
         w.WriteHeader(http.StatusBadRequest)
         fmt.Fprint(w, "400 - Malformed form data")
         return
     }
-    w.WriteHeader(http.StatusOK)
 }
 
 func YTMetaData(w http.ResponseWriter, r *http.Request) {
@@ -237,28 +236,11 @@ func YTMetaData(w http.ResponseWriter, r *http.Request) {
             s["Title"] = vmd.GetTitle()
             s["Artist"] = vmd.GetArtist()
             s["Album"] = vmd.Album
+            s["Thumbnail"] = vmd.Thumbnail
             b,_ := json.Marshal(s)
             fmt.Fprint(w, string(b))
             wg.Done()
         })
-    }()
-    wg.Wait()
-}
-
-func YTDownload(w http.ResponseWriter, r *http.Request) {
-    b, err := io.ReadAll(r.Body)
-    if err != nil {
-        fmt.Printf("Failed to read body,\n%s\n", err)
-        w.WriteHeader(http.StatusBadRequest)
-        fmt.Fprint(w, "400 - Malformed form data")
-        return
-    }
-    var vid string = string(b)
-    var wg sync.WaitGroup
-    wg.Add(1)
-    go func() {
-        DownloadVideo(vid)
-        wg.Done()
     }()
     wg.Wait()
 }

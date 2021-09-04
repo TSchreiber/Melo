@@ -110,6 +110,12 @@ input[type=range]:hover::-webkit-slider-thumb {
     align-items: center;
     margin: 0.5em 0;
     cursor: pointer;
+    border: solid #00000000 1px;
+    border-radius: 5px;
+}
+.song-row:hover {
+    border: solid #219bc4 1px;
+    background: rgba(255,255,255,0.05);
 }
 .song-row img {
     height: 100%;

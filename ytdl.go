@@ -4,11 +4,13 @@ package main
  */
 
 import (
+    "bufio"
     "os/exec"
     "encoding/json"
     "io"
     "fmt"
-    "errors"
+    "net/http"
+    "strings"
 )
 
 type VideoMetaData struct {
@@ -28,6 +30,7 @@ type VideoMetaData struct {
     Genre string
     Disc_Number int
     Release_Year int
+    Thumbnail string
 }
 
 /**
@@ -46,13 +49,7 @@ func GetVideoMetaData(videoID string, callback func(VideoMetaData, error)) {
     go func() {
         var vmd VideoMetaData
         r, _ := cmd.StdoutPipe()
-        e, _ := cmd.StderrPipe()
         cmd.Start()
-        b, _ := io.ReadAll(e)
-        if len(b) > 0 {
-            callback(vmd, errors.New("youtube-dl stderr: "+string(b)))
-            return
-        }
         dec := json.NewDecoder(r)
         for {
             if err := dec.Decode(&vmd); err == io.EOF {
@@ -88,29 +85,23 @@ func (vmd VideoMetaData) GetArtist() string {
     }
 }
 
-func DownloadVideo(vid string) {
-    cmd := exec.Command("youtube-dl", "-o", `./static/song/%(id)s.%(ext)s`, "--extract-audio", "--audio-format", "mp3", vid)
-    go func() {
-        r, err := cmd.StdoutPipe()
-        if err != nil {
-	        fmt.Printf("Failed to connect stdout pipe:\n%s\n", err)
-        }
-        e, err := cmd.StderrPipe()
-        if err != nil {
-            fmt.Printf("Failed to connect stderr pipe:\n%s\n", err)
-        }
-        cmd.Wait()
-        b, err := io.ReadAll(r)
-        if err != nil {
-            fmt.Printf("Failed to read stdout:\n%s\n", err)
-        }
-        fmt.Println(string(b))
-        b, err = io.ReadAll(e)
-        if err != nil {
-            fmt.Printf("Failed to read stderr:\n%s\n", err)
-        }
-        fmt.Println(string(b))
-        fmt.Println("Done.")
-    }()
+func DownloadVideo(url string, w http.ResponseWriter, song *Song) {
+    cmd := exec.Command("youtube-dl", "-o", `./static/song/%(id)s.%(ext)s`, "--extract-audio", "--audio-format", "mp3", url)
+    r, err := cmd.StdoutPipe()
+    if err != nil {
+        fmt.Printf("Failed to connect stdout pipe:\n%s\n", err)
+    }
     cmd.Start()
+    scan := bufio.NewScanner(r)
+    for scan.Scan() {
+        fmt.Fprintln(w, scan.Text())
+        fmt.Println(scan.Text())
+        if strings.HasPrefix(scan.Text(), "[ffmpeg] Destination: ") {
+            song.MP3URL = scan.Text()[len("[ffmpeg] Destination: static/"):]
+        }
+        w.(http.Flusher).Flush()
+    }
+    if err := scan.Err(); err != nil {
+		fmt.Println("reading standard input:", err)
+	}
 }

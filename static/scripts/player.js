@@ -108,7 +108,7 @@ player.setSong = (song) => {
     player.element.pause();
     player.source.setAttribute("src",song.mp3url);
     player.element.load();
-    player.info.thumbnail.src = song.thumbnailurl;
+    player.info.thumbnail.src = song.thumbnail;
     player.info.title.innerText = song.title;
     player.info.artist.innerText = song.artist;
 }

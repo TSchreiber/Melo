@@ -77,38 +77,38 @@
             </div>
         </div>
         <div id="foreground" class="hidden">
-            <div id="new-song-form" class="hidden">
+            <div id="new-song-form" class="">
                 <h2>New Song</h2>
-                <div class="NSF-button-container">
-                    <button id="NSF-YT" onclick="showYTForm()"><img src="/images/yticon.png"></img>YouTube</button>
-                    <button id="NSF-Manual" onclick="showManualForm()"><img src="/images/icons-192.png"></img>Manual</button>
+                <div class="NSF-input-container NSF-dataConfirmationStage hidden">
+                    <label for="NSF-title">Title</label>
+                    <input id="NSF-title" name="Title" autocomplete="off">
                 </div>
-                <div class="NSF-input-container NSF-manual-input">
-                    <label for="NSF-Title">Title</label>
-                    <input id="NSF-Title" name="Title" autocomplete="off">
-                </div>
-                <div class="NSF-input-container NSF-manual-input">
-                    <label for="NSF-Title">MP3 URL</label>
-                    <input id="NSF-mp3" name="MP3URL" autocomplete="off">
-                </div>
-                <div class="NSF-input-container NSF-manual-input">
+                <div class="NSF-input-container hidden">
                     <label for="NSF-Title">Thumbnail URL</label>
                     <input id="NSF-thumb" name="ThumbnailURL" autocomplete="off">
                 </div>
-                <div class="NSF-input-container NSF-manual-input">
+                <div class="NSF-input-container NSF-dataConfirmationStage hidden">
                     <label for="NSF-Title">Artist</label>
                     <input id="NSF-artist" name="Artist" autocomplete="off">
                 </div>
-                <div class="NSF-input-container NSF-manual-input">
+                <div class="NSF-input-container NSF-dataConfirmationStage hidden">
                     <label for="NSF-Title">Album</label>
                     <input id="NSF-album" name="Album" autocomplete="off">
                 </div>
-                <button class="NSF-submit NSF-manual-input" type="submit" onclick="submitNewSongForm()">Add</button>
-                <div class="NSF-input-container NSF-YT-input hidden">
-                    <label for="NSF-vid">Video ID</label>
-                    <input id="NSF-vid" name="VID" autocomplete="off" minlength="11" maxlength="11">
+                <div class="NSF-input-container NSF-urlInputStage hidden">
+                    <label for="NSF-url">Song URL</label>
+                    <input id="NSF-url" autocomplete="off">
                 </div>
-                <button class="NSF-submit NSF-YT-input hidden" type="submit" onclick="submitYTVID()">Get Video Info</button>
+
+                <progress id="NSF-progress" class="NSF-progressStage hidden" value="0" min="0" max="100"></progress>
+                <p id="NSF-status" class="NSF-progressStage hidden"></p>
+
+                <button
+                class="NSF-submit NSF-urlInputStage NSF-dataConfirmationStage hidden"
+                type="submit"
+                onclick="NewSongForm.next()">
+                    Next
+                </button>
             </div>
         </div>
     </body>

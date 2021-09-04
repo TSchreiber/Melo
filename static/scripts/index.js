@@ -19,7 +19,7 @@ let song_list = {
         el.innerHTML = `
             <button class="material-icons md-dark">play_arrow</button>
             <button class="material-icons md-dark">queue_music</button>
-            <img src="${data.thumbnailurl}"></img>
+            <img src="${data.thumbnail}"></img>
             <p>${data.title || ""}</p>
             <p>${data.artist || ""}</p>
             <p>${data.album || ""}</p>
