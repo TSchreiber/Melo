@@ -94,14 +94,16 @@ func DownloadVideo(url string, w http.ResponseWriter, song *Song) {
     cmd.Start()
     scan := bufio.NewScanner(r)
     for scan.Scan() {
-        fmt.Fprintln(w, scan.Text())
-        fmt.Println(scan.Text())
-        if strings.HasPrefix(scan.Text(), "[ffmpeg] Destination: ") {
-            song.MP3URL = scan.Text()[len("[ffmpeg] Destination: static/"):]
+        text := scan.Text()
+        fmt.Fprintln(w, text)
+        fmt.Println(text)
+        if strings.HasPrefix(text, "[ffmpeg] Destination: ") {
+            song.MP3URL = text[strings.Index(text,"static")+7:]
         }
         w.(http.Flusher).Flush()
     }
     if err := scan.Err(); err != nil {
 		fmt.Println("reading standard input:", err)
 	}
+    fmt.Fprintln(w, "done")
 }

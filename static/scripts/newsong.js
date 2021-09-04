@@ -91,13 +91,17 @@ downloadStage.run = function() {
             if (!done) {
                 document.getElementById("NSF-progress").value = Math.min(count * 100 / 8, 85);
                 reader.read().then(processText)
+                .catch(e => {
+                    console.log(e);
+                    this.complete();
+                });
             } else {
                 this.complete();
                 document.getElementById("NSF-progress").value = 100;
             }
         };
         reader.read().then(processText)
-    });
+    })
 }
 
 var domUpdateStage = new PipelineStage();
