@@ -88,8 +88,14 @@ input[type=range]:hover::-webkit-slider-thumb {
     height: clamp(24px, 15vmin, 64px);
 }
 
-.info--title { font-size: 1.2rem; }
-.info--artist { font-size: 0.85rem; }
+.info--title {
+    font-size: 1.2rem;
+    white-space: nowrap;
+}
+.info--artist {
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
 
 .song-list-container {
     margin: 2em;
@@ -215,10 +221,12 @@ input[type=range]:hover::-webkit-slider-thumb {
 #queue-container .queue-entry h6 {
     font-size: 0.85rem;
     font-weight: normal;
+    white-space: nowrap;
 }
 #queue-container .queue-entry h5 {
     font-size: 1rem;
     font-weight: normal;
+    white-space: nowrap;
 }
 
 #queue-container .current-song,
