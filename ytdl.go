@@ -25,7 +25,7 @@ type VideoMetaData struct {
     Album string
     Album_Type string
     Album_Artist string
-    Duration int
+    Duration float64
     ID string
     Genre string
     Disc_Number int
@@ -97,7 +97,7 @@ func DownloadVideo(url string, w http.ResponseWriter, song *Song) {
         text := scan.Text()
         fmt.Fprintln(w, text)
         fmt.Println(text)
-        if strings.HasPrefix(text, "[ffmpeg] Destination: ") {
+        if strings.Contains(text, "Destination") {
             song.MP3URL = text[strings.Index(text,"static")+7:]
         }
         w.(http.Flusher).Flush()

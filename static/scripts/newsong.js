@@ -56,7 +56,7 @@ urlInputStage.elements = document.getElementsByClassName("NSF-urlInputStage");
 var fetchSongInfoStage = new PipelineStage();
 fetchSongInfoStage.elements = document.getElementsByClassName("NSF-progressStage");
 fetchSongInfoStage.run = function() {
-    fetch(`/api/yt/${document.getElementById("NSF-url").value}`)
+    fetch(`/api/yt?${document.getElementById("NSF-url").value}`)
     .then(res => res.json())
     .then(data => {
         document.getElementById("NSF-title").value = data.Title;

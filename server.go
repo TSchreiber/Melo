@@ -29,7 +29,7 @@ func NewServer(serverInfo ServerInfo) *Server {
     router.Handle("/log", Authenticate(LogPost())).Methods("POST")
     router.Handle("/api/song", Authenticate(SongHandler()))
     router.Handle("/api/song/{oid}", Authenticate(SongHandler()))
-    router.Handle("/api/yt/{id}", AuthenticateFunc(YTMetaData)).Methods("GET")
+    router.Handle("/api/yt", AuthenticateFunc(YTMetaData)).Methods("GET")
     router.Handle("/api/yt", AuthenticateFunc(SongPost)).Methods("POST")
     router.Handle("/", Authenticate(HomeGet()))
     router.PathPrefix("/song").Handler(Authenticate(
@@ -226,7 +226,7 @@ func YTMetaData(w http.ResponseWriter, r *http.Request) {
     var wg sync.WaitGroup
     wg.Add(1)
     go func() {
-        GetVideoMetaData(mux.Vars(r)["id"], func(vmd VideoMetaData, err error){
+        GetVideoMetaData(r.URL.RawQuery, func(vmd VideoMetaData, err error){
             if err != nil {
                 fmt.Printf("Getting video meta data failed,\n\t%s\n", err)
                 w.WriteHeader(http.StatusInternalServerError)
