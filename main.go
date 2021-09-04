@@ -35,6 +35,8 @@ type Config struct {
 
 type ServerInfo struct {
 	Host, Port string
+	ServeTLS bool
+	CertFile, KeyFile string
 }
 func (server ServerInfo) GetURL() string {
 	return server.Host + ":" + server.Port

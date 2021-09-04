@@ -52,8 +52,11 @@ func (server *Server) StartServer() error {
         WriteTimeout: 15 * time.Second,
         ReadTimeout:  15 * time.Second,
     }
-
-    return srv.ListenAndServe()
+    if server.serverInfo.ServeTLS {
+        return srv.ListenAndServeTLS(server.serverInfo.CertFile, server.serverInfo.KeyFile)
+    } else {
+        return srv.ListenAndServe()
+    }
 }
 
 func HomeGet() http.HandlerFunc {
