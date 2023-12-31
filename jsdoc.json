@@ -1,0 +1,34 @@
+{
+    "plugins": [
+        "plugins/markdown",
+        "node_modules/jsdoc-tsimport-plugin/index.js"
+    ],
+    "source": {
+        "include": [ "static/scripts/", "static/modules/" ],
+        "exclude": [],
+        "includePattern": ".+\\.(m?js(doc|x)?)$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "sourceType": "module",
+    "opts": {
+        "destination": "./docs/",
+        "template": "templates/docdash"
+    },
+    "docdash": {
+        "static": true,
+        "sort": true,
+        "search": true,
+        "collapse": true,
+        "typedefs": true,
+        "removeQuotes": "none",
+        "scripts": [],
+        "menu":{
+            "Github repo": {
+                "href":"https://github.com/TSchreiber/Melo",
+                "target":"_blank",
+                "class":"menu-item",
+                "id":"repository"
+            }
+        }
+    }
+}

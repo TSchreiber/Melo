@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <script type="module">
+        let redirect_url = sessionStorage.getItem("auth_redirect") || window.location.origin;
+        sessionStorage.removeItem("auth_redirect");
+        let params = new URLSearchParams(window.location.search);
+        if (params.has("id_token")) {
+            sessionStorage.setItem("keywe_id_token", params.get("id_token"));
+        }
+        if (params.has("refresh_token")) {
+            localStorage.setItem("keywe_refresh_token", params.get("refresh_token"));
+        }
+        window.location = redirect_url;
+    </script>
+</body>
+</html>

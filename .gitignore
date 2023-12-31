@@ -1,3 +1,6 @@
 config.json
 .database
 static/song
+jsconfig.json
+docs/
+node_modules/

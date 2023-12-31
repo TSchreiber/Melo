@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <link rel="manifest" href="manifest.json">
+        <link rel="apple-touch-icon" href="/images/icons-512.png">
+        <meta name="theme-color" content="#41B8DF">
+        <title>Download Song</title>
+        <link rel="icon" href="/images/icons-192.png" type="image/png">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
+        <link rel="stylesheet" href="/styles/base.css">
+        <link rel="stylesheet" href="/styles/theme.css">
+        <link rel="stylesheet" href="/styles/download_song.css">
+        <script src="/modules/song_download_controller.mjs" type="module"></script>
+    </head>
+
+    <script type="module">
+        import Auth from "/modules/auth.mjs";
+        let refreshToken = Auth.getRefreshToken();
+        if (!refreshToken) {
+            sessionStorage.setItem("auth_redirect", window.location.href);
+            window.location.href = "/login";
+        }
+        let idToken = Auth.getIdToken();
+        if (!idToken) {
+            Auth.refreshIdToken();
+        }
+    </script>
+
+    <body>
+        <form id="new-song-form" action="" onsubmit="return false;">
+            <h2>New Song</h2>
+
+            <div class="tab" data-tab="1" data-focused>
+                <label for="source-url">Song URL</label>
+                <input id="source-url" autocomplete="off">
+            </div>
+
+            <div class="tab" data-tab="2">
+                <label for="title">Title</label>
+                <input id="title" name="title" autocomplete="off">
+                <label for="artist">Artist</label>
+                <input id="artist" name="artist" autocomplete="off">
+                <label for="album">Album</label>
+                <input id="album" name="album" autocomplete="off">
+                <label for="artwork">Artwork URL</label>
+                <input id="artwork-url" name="artwork-url" autocomplete="off">
+                <img id="artwork-img" src="" alt="Image of the song's artwork">
+            </div>
+
+            <div class="tab" data-tab="3">
+                <div id="song-download-progress"></div>
+            </div>
+
+            <button id="next-tab">Next</button>
+        </form>
+    </body>
+</html>

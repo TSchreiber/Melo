@@ -81,7 +81,7 @@ input[type=range]:hover::-webkit-slider-thumb {
     justify-content: center;
 }
 
-.info--thumbnail {
+.info--artwork {
     object-fit: cover;
     margin: 10px;
     width: clamp(24px, 15vmin, 64px);

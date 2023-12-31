@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "docdash": "^2.0.2"
+  },
+  "devDependencies": {
+    "jsdoc-tsimport-plugin": "^1.0.5"
+  }
+}

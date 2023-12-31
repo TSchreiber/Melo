@@ -1,0 +1,77 @@
+body {
+    background-image: linear-gradient(#191925,#303040);
+}
+
+input {
+    display: block;
+    border: solid hsl(210,41%,15%) 1px;
+    border-radius: 4px;
+}
+
+input:not(:last-child) {
+    margin-bottom: 1em;
+}
+
+label {
+    color: #555;
+    font-weight: bold;
+}
+
+#song-download-progress {
+    color: #555;
+    width: 30ch;
+}
+
+#artwork-img {
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+    border: solid #555 2px;
+}
+
+#new-song-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    grid-gap: 25px;
+    background: hsl(240,21%,92%);
+    padding: 50px;
+    border-radius: 5px;
+}
+
+#new-song-form h2 {
+    color: #555;
+    margin: 0;
+    text-align: center;
+}
+
+input:invalid {
+    border: solid hsl(0,100%,60%) 1.5px;
+}
+
+#next-tab {
+    background: white;
+    cursor: pointer;
+    padding: 0.25em;
+    border-radius: 5px;
+    border: solid rgb(118, 118, 118) 1px;
+}
+
+#next-tab:hover {
+    background: #f0f0f0;
+}
+
+.tab {
+    display: none;
+}
+
+.tab[data-focused] {
+    display: block;
+}

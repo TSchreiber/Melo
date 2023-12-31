@@ -1,16 +1,18 @@
-package main
+package internal
+
 /**
  * Functions for interfacing with the youtube-dl tool
  */
 
 import (
-    "bufio"
-    "os/exec"
-    "encoding/json"
-    "io"
-    "fmt"
-    "net/http"
-    "strings"
+	"bufio"
+	"encoding/json"
+	"io"
+
+	"fmt"
+	"net/http"
+	"os/exec"
+	"strings"
 )
 
 type VideoMetaData struct {
@@ -36,19 +38,25 @@ type VideoMetaData struct {
 /**
  * Example
  * ```go
- * GetVideoMetaData("000VIDID000", func(vmd VideoMetaData, err error) {
+ * GetVideoMetaData("<videoID>", func(vmd VideoMetaData, err error) {
  *     if err != nil {
  *         fmt.Println(err)
  *     } else {
  *         fmt.Println(vmd.Alt_Title)
  *     }
- *})```
+ *})
+ *```
  */
 func GetVideoMetaData(videoID string, callback func(VideoMetaData, error)) {
-    cmd := exec.Command("youtube-dl","-j",videoID)
+    var vmd VideoMetaData
+    cmd := exec.Command("yt-dlp","-j",videoID)
+    fmt.Println(cmd)
     go func() {
-        var vmd VideoMetaData
-        r, _ := cmd.StdoutPipe()
+        r, err := cmd.StdoutPipe()
+        if err != nil {
+            callback(vmd, err)
+            return
+        }
         cmd.Start()
         dec := json.NewDecoder(r)
         for {
@@ -85,25 +93,36 @@ func (vmd VideoMetaData) GetArtist() string {
     }
 }
 
-func DownloadVideo(url string, w http.ResponseWriter, song *Song) {
-    cmd := exec.Command("youtube-dl", "-o", `./static/song/%(id)s.%(ext)s`, "--extract-audio", "--audio-format", "mp3", url)
+type SongPostRequest struct {
+    Title, Artist, Album, Artwork, Source string
+}
+func DownloadSong(w http.ResponseWriter, source string) (string,error) {
+    cmd := exec.Command(
+        "yt-dlp",
+        "-o", `./static/song/%(id)s.%(ext)s`,
+        "--extract-audio",
+        "--audio-format", "mp3",
+        source,
+    )
     r, err := cmd.StdoutPipe()
     if err != nil {
-        fmt.Printf("Failed to connect stdout pipe:\n%s\n", err)
+        return "", err
     }
     cmd.Start()
+    var audiourl string
     scan := bufio.NewScanner(r)
     for scan.Scan() {
         text := scan.Text()
         fmt.Fprintln(w, text)
         fmt.Println(text)
         if strings.Contains(text, "Destination") {
-            song.MP3URL = text[strings.Index(text,"static")+7:]
+            audiourl = text[strings.Index(text,"static")+7:]
         }
         w.(http.Flusher).Flush()
     }
-    if err := scan.Err(); err != nil {
-		fmt.Println("reading standard input:", err)
+    err = scan.Err()
+    if err != nil {
+        return audiourl,err
 	}
-    fmt.Fprintln(w, "done")
+    return audiourl,nil
 }

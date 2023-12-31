@@ -14,15 +14,26 @@
         <link rel="stylesheet" href="/styles/base.css">
         <link rel="stylesheet" href="/styles/layout.css">
         <link rel="stylesheet" href="/styles/theme.css">
-        <script defer src="/scripts/player.js"></script>
-        <script defer src="/scripts/newsong.js"></script>
-        <script defer src="/scripts/queue.js"></script>
-        <script defer src="/scripts/index.js"></script>
+        <script src="/modules/playback_controls.mjs" type="module"></script>
+        <script src="/modules/catalog.mjs" type="module"></script>
     </head>
+
+    <script type="module">
+        import Auth from "/modules/auth.mjs";
+        let refreshToken = Auth.getRefreshToken();
+        if (!refreshToken) {
+            window.location.href = "/login";
+        }
+        let idToken = Auth.getIdToken();
+        if (!idToken) {
+            Auth.refreshIdToken();
+        }
+    </script>
+
     <body>
         <video id="audio-player"><source type="audio/mp3" /></video>
         <div class="content-container">
-            <div class="song-list-container">
+            <div class="song-list-container" id="song-table">
                 <div class="song-row">
                     <div></div>
                     <div></div>
@@ -37,7 +48,7 @@
         </div>
         <div class="side-bar">
             <label id="search-bar-container" for="search">
-                <input id="search" autocomplete="off"></input>
+                <input id="search" type="search" autocomplete="off"></input>
                 <button class="material-icons md-dark">search</button>
             </label>
             <div id="queue-title">
@@ -48,23 +59,19 @@
             <div style="position: relative;">
                 <div id="queue-container"></div>
             </div>
-            <a id="add-song-container" href="#" onclick="showNewSongForm()">
-                <p>Add Song</p>
-                <p class="material-icons md-dark">add_circle_outlined</p>
-            </a>
         </div>
         <div class="info-container">
-            <img class="info--thumbnail" />
+            <img id="artwork" class="info--artwork" />
             <div class="info-container--inner">
-                <div class="info--title"></div>
-                <div class="info--artist"></div>
+                <div id="title" class="info--title"></div>
+                <div id="artist" class="info--artist"></div>
             </div>
         </div>
         <div id="control-bar" class="control-bar">
             <div id="controls-main" class="control-button-container">
-                <button class="control-button previous-button material-icons md-dark">skip_previous</button>
-                <button class="control-button play-button material-icons md-dark">play_circle</button>
-                <button class="control-button next-button material-icons md-dark">skip_next</button>
+                <button id="previous-button" class="control-button previous-button material-icons md-dark">skip_previous</button>
+                <button id="play-button" class="control-button play-button material-icons md-dark">play_circle</button>
+                <button id="next-button" class="control-button next-button material-icons md-dark">skip_next</button>
             </div>
             <div id="progress-container">
                 <p id="progress-left">00:00</p>
@@ -76,47 +83,7 @@
                 <input id="volume-slider" type="range" min="0" max="100" value="50">
             </div>
         </div>
-        <div id="foreground" class="hidden">
-            <div id="new-song-form" class="">
-                <h2>New Song</h2>
-                <div class="NSF-input-container NSF-dataConfirmationStage hidden">
-                    <label for="NSF-title">Title</label>
-                    <input id="NSF-title" name="Title" autocomplete="off">
-                </div>
-                <div class="NSF-input-container hidden">
-                    <label for="NSF-Title">Thumbnail URL</label>
-                    <input id="NSF-thumb" name="ThumbnailURL" autocomplete="off">
-                </div>
-                <div class="NSF-input-container NSF-dataConfirmationStage hidden">
-                    <label for="NSF-Title">Artist</label>
-                    <input id="NSF-artist" name="Artist" autocomplete="off">
-                </div>
-                <div class="NSF-input-container NSF-dataConfirmationStage hidden">
-                    <label for="NSF-Title">Album</label>
-                    <input id="NSF-album" name="Album" autocomplete="off">
-                </div>
-                <div class="NSF-input-container NSF-urlInputStage hidden">
-                    <label for="NSF-url">Song URL</label>
-                    <input id="NSF-url" autocomplete="off">
-                </div>
-
-                <progress id="NSF-progress" class="NSF-progressStage hidden" value="0" min="0" max="100"></progress>
-                <p id="NSF-status" class="NSF-progressStage hidden"></p>
-
-                <button
-                class="NSF-submit NSF-urlInputStage NSF-dataConfirmationStage hidden"
-                type="submit"
-                onclick="NewSongForm.next()">
-                    Next
-                </button>
-            </div>
-        </div>
+        <div id="foreground" class="hidden"> </div>
     </body>
     <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');</script>
-    <script defer>
-        setTimeout(() => {
-            player.controls.volume.value = 50;
-            player.controls.volume.dispatchEvent(new Event("input"));
-        }, 0);
-    </script>
 </html>
