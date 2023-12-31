@@ -2,7 +2,8 @@ package main
 
 import (
 	"flag"
-    "fmt"
+	"log"
+	"path/filepath"
 
 	"github.com/TSchreiber/005_music_api/internal"
 )
@@ -12,9 +13,12 @@ func main() {
     configFilePathPtr := flag.String("config", defaultConfigFilePath,
         "The path to the server configuration file")
     flag.Parse()
-    configFilePath := *configFilePathPtr
+    configFilePath,err := filepath.Abs(*configFilePathPtr)
+    if err != nil {
+        log.Fatal(err)
+    }
+    log.Printf("Using config file at \"%s\"\n", configFilePath)
+
     config := internal.ParseConfig(configFilePath)
-    fmt.Println(configFilePath)
-    fmt.Println(config)
     internal.Launch(config)
 }

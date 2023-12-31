@@ -24,20 +24,3 @@ func ParseConfig(configFile string) MeloConfig {
 	json.Unmarshal([]byte(b), &con)
 	return con
 }
-
-/*
-func main() {
-    config := ParseConfig()
-    var dbConfig MongoDBConfig
-    dbConfig.DBURI = "mongodb://localhost:27017"
-    dbConfig.CollectionName = "TSchreiber_Music-Player"
-    var err error
-    MeloDB, err := NewMongoDB(dbConfig)
-    if err != nil {
-        panic(err)
-    }
-    defer func() {MeloDB.Disconnect()}()
-	server := NewServer(config.Server, config.Keywe)
-    log.Fatal(server.StartServer())
-}
-*/

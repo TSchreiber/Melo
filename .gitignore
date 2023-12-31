@@ -4,3 +4,4 @@ static/song
 jsconfig.json
 docs/
 node_modules/
+*.exe
