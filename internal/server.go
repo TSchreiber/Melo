@@ -88,7 +88,7 @@ func (server *MeloServer) DisconnectDB() {
 
 func createRouterForServer(server MeloServer) *mux.Router {
     router := mux.NewRouter()
-    authenticator := createAuthenticator(*server.tokenVerifier)
+    authenticator := createAuthenticatorMiddleware(*server.tokenVerifier)
 
     router.Path("/").HandlerFunc(serveHomePage)
 
@@ -137,16 +137,17 @@ func createRouterForServer(server MeloServer) *mux.Router {
     return router
 }
 
-
-func createAuthenticator(verifier keywe.Verifier) mux.MiddlewareFunc {
+func createAuthenticatorMiddleware(verifier keywe.Verifier) mux.MiddlewareFunc {
     return func(next http.Handler) http.Handler {
         return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             token := r.Header.Get("Authorization")
+            if token == "" {
+                w.WriteHeader(http.StatusUnauthorized)
+                return
+            }
             claims, err := verifier.Verify(token)
             if err != nil {
-                // TODO: send either 401 or 403 depending on the sepcific error
-                w.WriteHeader(http.StatusBadRequest)
-                log.Printf("Encountered unexpected error while handling request to path, \"%s\"\n%s\n", r.URL.Path, err)
+                w.WriteHeader(http.StatusForbidden)
                 return
             } else {
                 ctx := context.WithValue(r.Context(), "user_claims", claims)
