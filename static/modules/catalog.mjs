@@ -44,7 +44,7 @@ window.addEventListener("load", async () => {
 
     let playlists = await MeloApi.samplePlaylists(idToken);
     for (let playlist of playlists) {
-        _homePanel.appendChild(createPlaylistEntry(playlist, idToken));
+        _homePanel.appendChild(createPlaylistEntry(playlist));
     }
 
     let homeButton = /** @type {HTMLElement} */
@@ -60,10 +60,9 @@ window.addEventListener("load", async () => {
 
 /**
  * @param {MeloPlaylistMetadata} playlist
- * @param {string} idToken
  * @returns {HTMLElement}
  */
-function createPlaylistEntry(playlist, idToken) {
+function createPlaylistEntry(playlist) {
     let el = document.createElement("div");
     el.classList.add("inline-flex", "gap-4", "cursor-pointer");
     el.innerHTML = `
@@ -77,6 +76,8 @@ function createPlaylistEntry(playlist, idToken) {
         </div>`
     el.addEventListener("click", async () => {
         _activePanel.classList.add("hidden");
+        let idToken = Auth.getIdToken() ||
+            /** @type {string} */ (await Auth.refreshIdToken());
         setPlaylist(await MeloApi.getPlaylist(playlist.id, idToken));
         _playlistPanel.classList.remove("hidden");
         _activePanel = _playlistPanel;
