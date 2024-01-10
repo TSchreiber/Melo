@@ -3,6 +3,7 @@
 import MeloApi from "./melo_api.mjs";
 import Auth from "./auth.mjs";
 import Queue from "./queue.mjs";
+import queue from "./queue.mjs";
 
 /**
 * @private
@@ -321,6 +322,14 @@ export function setSong(song) {
 
                 navigator.mediaSession.setActionHandler('pause', function() {
                     playButton().click();
+                });
+
+                navigator.mediaSession.setActionHandler('nexttrack', function() {
+                    nextButton().click();
+                });
+
+                navigator.mediaSession.setActionHandler('previoustrack', function() {
+                    previousButton().click();
                 });
             }
             artworkElement().src = song.artwork;
