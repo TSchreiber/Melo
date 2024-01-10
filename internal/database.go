@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,6 +21,22 @@ type Song struct {
     Album string `json:"album"`
 }
 
+type Playlist struct {
+    Id string `json:"id" bson:"_id"`
+    Artwork string `json:"artwork"`
+    Title string `json:"title"`
+    Description string `json:"description"`
+    Songs []Song `json:"songs"`
+}
+
+type NormalizedPlaylist struct {
+    Id string `json:"id"`
+    Artwork string `json:"artwork"`
+    Title string `json:"title"`
+    Description string `json:"description"`
+    Songs []primitive.ObjectID `json:"songs"`
+}
+
 /* The internal representation of a song in the mongo database */
 type dbSong struct {
     DownloadURL, MP3URL, Thumbnail, Title, Artist, Album, _id string
@@ -31,6 +48,10 @@ type MeloDatabase interface {
     SearchForSong(search string) ([]Song,error)
     GetUserPermissions(email string) ([]string,error)
     PostSong(req map[string]string) (primitive.ObjectID,error)
+    GetPlaylist(playlistId string) (Playlist,error)
+    //SearchForPlaylist(search string) ([]Playlist,error)
+    SamplePlaylists() ([]Playlist,error)
+    PostPlaylist(NormalizedPlaylist) (primitive.ObjectID,error)
     Disconnect()
 }
 
@@ -128,4 +149,91 @@ func (db MongoDatabase) GetUserPermissions(email string) ([]string,error) {
         return []string{}, err
     }
     return r.Permissions, nil
+}
+
+func (db MongoDatabase) GetPlaylist(playlistId string) (Playlist,error) {
+    var playlist Playlist
+    id,err := primitive.ObjectIDFromHex(playlistId)
+    if err != nil {
+        return playlist, fmt.Errorf(
+            "MongoDatabase.GetPlaylist Invalid ObjectID %s: %v", playlistId, err)
+    }
+    col := db.database.Collection("playlist")
+    matchStage := bson.D { primitive.E {
+        Key: "$match",
+        Value: bson.D { primitive.E {
+            Key: "_id",
+            Value: id,
+        }},
+    }}
+    lookupStage := bson.D { primitive.E {
+        Key: "$lookup",
+        Value: bson.D {
+            primitive.E {
+                Key: "from",
+                Value: "song",
+            },
+            primitive.E {
+                Key: "localField",
+                Value: "songs",
+            },
+            primitive.E {
+                Key: "foreignField",
+                Value: "_id",
+            },
+            primitive.E {
+                Key: "as",
+                Value: "songs",
+            },
+        },
+    }}
+    cursor, err := col.Aggregate(context.TODO(),
+        mongo.Pipeline{matchStage, lookupStage})
+    if err != nil {
+        return playlist, fmt.Errorf(
+            "MongoDatabase.GetPlaylist Failed to aggregate playlist songs: %v", err)
+    }
+    err = cursor.Err()
+    if err != nil {
+        return playlist, fmt.Errorf(
+            "MongoDatabase.GetPlaylist Cursor.Err: %v", err)
+    }
+    count := cursor.RemainingBatchLength()
+    if count == 0 {
+        return playlist, fmt.Errorf(
+            "MongoDatabase.GetPlaylist Playlist not found: %v", err)
+    }
+    cursor.Next(context.Background())
+    err = cursor.Decode(&playlist)
+    if err != nil {
+        return playlist, fmt.Errorf(
+            "MongoDatabase.GetPlaylist Failed to decode playlist: %v", err)
+    }
+    return playlist,nil
+}
+
+func (db MongoDatabase) PostPlaylist(playlist NormalizedPlaylist) (primitive.ObjectID,error) {
+    col := db.database.Collection("playlist")
+    res,err := col.InsertOne(context.Background(), playlist)
+    if err != nil {
+        return primitive.NilObjectID, err
+    }
+    id := res.InsertedID.(primitive.ObjectID)
+    return id, nil
+}
+
+func (db MongoDatabase) SamplePlaylists() ([]Playlist, error) {
+    col := db.database.Collection("playlist")
+    cursor, err := col.Aggregate(context.Background(),
+        []bson.M{{"$sample": bson.M{"size": 25}}} )
+    if err != nil {
+        return nil, err
+    }
+    var list []Playlist
+    for cursor.Next(context.Background()) {
+        var playlist Playlist
+        cursor.Decode(&playlist)
+        list = append(list, playlist)
+    }
+    return list, nil
 }

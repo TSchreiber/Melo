@@ -7,3 +7,11 @@ input[type=range] {
     --background: #4D4D4F;
     --fill-color: #41B8DF;
 }
+
+.fg-bright-melo-blue {
+    color: #03A9F4;
+}
+
+.bg-dark-melo-blue {
+    background: #20304C;
+}

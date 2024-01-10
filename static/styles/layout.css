@@ -1,13 +1,20 @@
 body {
     display: grid;
     overflow: hidden;
-    grid-template-areas: "side-bar content" "info controls";
+    grid-template-areas:
+        "side-bar action-bar"
+        "side-bar main"
+        "info controls";
     grid-template-columns: clamp(24ch, 32ch, 40ch) 1fr;
-    grid-template-rows: 1fr auto
+    grid-template-rows: auto 1fr auto;
+}
+
+#action-bar {
+    grid-area: action-bar;
 }
 .control-bar { grid-area: controls; }
 .info-container { grid-area: info; }
-.content-container { grid-area: content; }
+.main-panel { grid-area: main; }
 .side-bar { grid-area: side-bar}
 video { display: none; }
 
@@ -97,18 +104,6 @@ input[type=range]:hover::-webkit-slider-thumb {
     white-space: nowrap;
 }
 
-.song-list-container {
-    margin: 2em;
-    height: calc(100% - 4em);
-    position: relative;
-    z-index: 0;
-}
-.song-rows-container {
-    overflow: scroll;
-    height: 100%;
-    width: 100%;
-    position: absolute;
-}
 .song-row {
     display: grid;
     grid-auto-flow: column;
@@ -125,6 +120,28 @@ input[type=range]:hover::-webkit-slider-thumb {
     border: solid #219bc4 1px;
     background: rgba(255,255,255,0.05);
 }
+
+.song-list-container > .song-row:first-child {
+    grid-template-rows: 1.25rem;
+    margin: 0;
+    margin-top: 0.5rem;
+    position: sticky;
+    top: -1rem;
+    background: #191927;
+    border-bottom: solid #219bc4 1px;
+    border-radius: 0px;
+}
+
+.song-list-container > .song-row:first-child > * {
+    font-size: 0.85rem;
+}
+
+.song-list-container > .song-row:first-child:hover {
+    border: solid transparent 1px;
+    border-bottom: solid #219bc4 1px;
+    background: unset;
+}
+
 .song-row img {
     height: 100%;
     width: 100%;
@@ -190,6 +207,10 @@ input[type=range]:hover::-webkit-slider-thumb {
     grid-template-rows: auto auto 1fr auto;
     padding: 1em;
     position: relative;
+}
+
+#melo-logo img {
+    height: 3em;
 }
 
 #queue-container {
@@ -346,4 +367,25 @@ input[type=range]:hover::-webkit-slider-thumb {
 #search-bar-container button {
     border-left: solid hsl(240,14%,45%) 1px;
     padding-left: 0.25em;
+}
+
+#main-panel {
+    background: #191927;
+    overflow: scroll;
+}
+
+#action-bar {
+    background: #191927;
+}
+
+#playlist-artwork-container {
+    grid-area: artwork;
+}
+
+#playlist-title {
+    grid-area: title;
+}
+
+#playlist-description {
+    grid-area: description;
 }

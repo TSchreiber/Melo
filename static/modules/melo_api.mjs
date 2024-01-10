@@ -11,6 +11,31 @@
 */
 
 /**
+* @typedef MeloPlaylistMetadata {object}
+* @property {string} title
+* @property {string} description
+* @property {string} id
+* @property {string} artwork The URL for the song's artwork
+*/
+
+/**
+* @typedef MeloPlaylist {object}
+* @property {string} title
+* @property {string} description
+* @property {string} id
+* @property {string} artwork The URL for the song's artwork
+* @property {MeloSongMetadata[]} songs
+*/
+/** @type MeloPlaylist */
+const nullPlaylist = {
+    title: "",
+    description: "",
+    id: "",
+    artwork: "",
+    songs: []
+}
+
+/**
 * Retrieves the metadata for the song with the given Melo song id
 * @param {string} songId The Melo song id for the song
 * @param {string} idToken The id token used to authorize the request
@@ -18,6 +43,7 @@
 */
 function getSongMetadata(songId, idToken) {
     return new Promise((resolve, reject) => {
+        reject("getSongMetadata is not implemented");
     });
 }
 
@@ -126,6 +152,52 @@ function postSong(song, idToken) {
     });
 }
 
+/**
+ * @param {string} playlistId
+ * @param {string} idToken The id token used to authorize the request
+ * @return {Promise<MeloPlaylist>}
+ */
+function getPlaylist(playlistId, idToken) {
+    return new Promise((resolve, reject) => {
+        let headers = new Headers();
+        headers.set("Authorization", idToken);
+        fetch ("/api/playlist/metadata?id=" + playlistId, { headers })
+        .then(res => res.json())
+        .then(json => {
+            if (!json) {
+                resolve(nullPlaylist);
+            }
+            else {
+                resolve(json);
+            }
+        })
+        .catch(err => reject(err));
+    });
+}
+
+/**
+ * Fetches a random set of playlists
+ * @param {string} idToken The id token used to authorize the request
+ * @return {Promise<MeloPlaylistMetadata[]>}
+ */
+function samplePlaylists(idToken) {
+    return new Promise((resolve, reject) => {
+        let headers = new Headers();
+        headers.set("Authorization", idToken);
+        fetch ("/api/playlist/sample", { headers })
+        .then(res => res.json())
+        .then(json => {
+            if (!json) {
+                resolve([]);
+            }
+            else {
+                resolve(json);
+            }
+        })
+        .catch(err => reject(err));
+    });
+}
+
 export default {
     getSongMetadata,
     getHomePageSongs,
@@ -133,8 +205,6 @@ export default {
     getBlobURLForSong,
     fetchSongMetadataFromURL,
     postSong,
+    getPlaylist,
+    samplePlaylists,
 }
-
-
-
-

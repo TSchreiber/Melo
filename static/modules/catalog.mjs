@@ -1,13 +1,10 @@
 /**
-* Contains the code code for manipulating the data shown in the catalog portion
-* of the DOM.
 * @module Catalog
 */
 
 import MeloApi from "./melo_api.mjs"
 import Auth from "./auth.mjs"
-import Queue from "./queue.mjs"
-import { playSong } from "./playback_controls.mjs";
+import { setPlaylist} from "./playlist.mjs"
 
 /**
 * @see [MeloAPI~MeloSongMetadata](./module-MeloAPI.html#~MeloSongMetadata)
@@ -15,99 +12,74 @@ import { playSong } from "./playback_controls.mjs";
 */
 
 /**
-* @private
-* @type {HTMLElement}
+* @see [MeloAPI~MeloPlaylistMetadata](./module-MeloAPI.html#~MeloPlaylistMetadata)
+* @typedef {import('./melo_api.mjs').MeloPlaylistMetadata} MeloPlaylistMetadata
 */
-var songTable;
 
 /**
-* @private
-* @type {HTMLElement}
+* @see [MeloAPI~MeloPlaylist](./module-MeloAPI.html#~MeloPlaylist)
+* @typedef {import('./melo_api.mjs').MeloPlaylist} MeloPlaylist
 */
-var entrySet;
 
-/**
-* @private
-* @type {HTMLInputElement}
-*/
-var searchBar;
+/** @type {HTMLElement} */
+var _activePanel;
+/** @type {HTMLElement} */
+var _homePanel;
+/** @type {HTMLElement} */
+var _playlistPanel;
 
 window.addEventListener("load", async () => {
-    let el = document.getElementById("song-table")
-    if (!el) throw new Error("Song table is missing");
-    songTable = el;
+    let idToken = Auth.getIdToken() ||
+        /** @type {string} */ (await Auth.refreshIdToken());
 
-    let _entrySet = /** @type {HTMLElement} */ (songTable.children[2]);
-    if (!_entrySet) throw new Error("Song table is missing entry set");
-    entrySet = _entrySet;
+    _homePanel = /** @type {HTMLElement} */
+        (document.getElementById("home-panel"));
+    if (!_homePanel) throw new Error(
+        "Catalog~window_onload: \"home-panel\" undefined");
+    _playlistPanel = /** @type {HTMLElement} */
+        (document.getElementById("playlist-panel"));
+    if (!_playlistPanel) throw new Error(
+        "Catalog~window_onload: \"playlist-panel\" undefined");
+    _activePanel = _homePanel;
 
-    let searchBarEl = /** @type {HTMLInputElement} */ (document.getElementById("search"));
-    if (!searchBarEl) throw new Error("Search bar is missing");
-    searchBar = searchBarEl;
+    let playlists = await MeloApi.samplePlaylists(idToken);
+    for (let playlist of playlists) {
+        _homePanel.appendChild(createPlaylistEntry(playlist, idToken));
+    }
 
-
-    searchBar.addEventListener("input", () => {
-        if (searchBar.value) {
-            searchUpdateHandler();
-        } else {
-            loadUserHomePage();
-        }
+    let homeButton = /** @type {HTMLElement} */
+        (document.getElementById("home-button"));
+    if (!homeButton) throw new Error(
+        "Catalog~window_onload: \"home-button\" undefined");
+    homeButton.addEventListener("click", () => {
+        _activePanel.classList.add("hidden");
+        _homePanel.classList.remove("hidden");
+        _activePanel = _homePanel;
     });
-
-    loadUserHomePage();
 });
 
-/** */
-async function loadUserHomePage() {
-    clear();
-    let idToken = Auth.getIdToken() ||
-        /** @type {string} */ (await Auth.refreshIdToken());
-    let songs = await MeloApi.getHomePageSongs(idToken);
-    for (let song of songs) {
-        append(song);
-    }
-}
-
-/** */
-function clear() {
-    entrySet.innerHTML = "";
-}
-
 /**
- * @param {MeloSongMetadata} data
+ * @param {MeloPlaylistMetadata} playlist
+ * @param {string} idToken
+ * @returns {HTMLElement}
  */
-function append(data) {
+function createPlaylistEntry(playlist, idToken) {
     let el = document.createElement("div");
-    entrySet.append(el);
-    el.classList.add("song-row");
-    el.onclick = (e) => {
-        let target = /** @type {HTMLElement} */ (e.target);
-        if (target.innerText === "queue_music") {
-            Queue.push(data);
-        } else {
-            playSong(data);
-        }
-    }
+    el.classList.add("inline-flex", "gap-4", "cursor-pointer");
     el.innerHTML = `
-        <button class="material-icons md-dark">play_arrow</button>
-        <button class="material-icons md-dark">queue_music</button>
-        <img src="${data.artwork}"></img>
-        <p>${data.title || ""}</p>
-        <p>${data.artist || ""}</p>
-        <p>${data.album || ""}</p>
-        `;
-}
-
-/**
-* @private
-*/
-async function searchUpdateHandler() {
-    clear();
-    let idToken = Auth.getIdToken() ||
-        /** @type {string} */ (await Auth.refreshIdToken());
-    let query = searchBar.value;
-    let songs = await MeloApi.searchForSong(query, idToken);
-    for (let song of songs) {
-        append(song);
-    }
+        <div class="flex justify-center">
+            <img class="bg-black w-16 h-16 object-cover"
+                 src="${playlist.artwork}">
+        </div>
+        <div class="flex flex-column justify-center">
+            <div class="text-lg">${playlist.title}</div>
+            <div class="text-xs">${playlist.description}</div>
+        </div>`
+    el.addEventListener("click", async () => {
+        _activePanel.classList.add("hidden");
+        setPlaylist(await MeloApi.getPlaylist(playlist.id, idToken));
+        _playlistPanel.classList.remove("hidden");
+        _activePanel = _playlistPanel;
+    });
+    return el;
 }

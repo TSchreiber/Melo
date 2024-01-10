@@ -1,4 +1,4 @@
-/** @module auth */
+/** @module Auth */
 
 /**
 * The name of the token in storage. This is the identifier that will be used
@@ -92,6 +92,25 @@ function refreshIdToken() {
     });
 }
 
+/** */
+function logOut() {
+    sessionStorage.removeItem(idTokenName);
+    localStorage.removeItem(refreshTokenName);
+    window.location.href = "/";
+}
+
+/**
+ * Decodes the payload (claims) of the provided JSON Web Token (JWT)
+ * @param {string} token
+ * @returns {Object} payload
+ */
+function decode(token) {
+    let encodedClaims = token.split(".")[1];
+    let claimsString = atob(encodedClaims);
+    let claims = JSON.parse(claimsString);
+    return claims;
+}
+
 /**
 * @private
 * @param {string} token
@@ -107,5 +126,11 @@ function isExpired(token) {
     return false;
 }
 
-const auth = { getIdToken, getRefreshToken, refreshIdToken };
+const auth = {
+    getIdToken,
+    getRefreshToken,
+    refreshIdToken,
+    logOut,
+    decode,
+};
 export default auth;

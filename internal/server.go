@@ -13,6 +13,7 @@ import (
 
 	keywe "github.com/TSchreiber/keywe-go"
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type MeloConfig struct {
@@ -106,6 +107,15 @@ func createRouterForServer(server MeloServer) *mux.Router {
     songApiRouter.Path("/metadata").Handler(createSongMetadataHandler(server.meloDB))
     songApiRouter.Path("/search").Handler(createSearchForSongHandler(server.meloDB))
 
+    playlistApiRouter :=
+        router.PathPrefix("/api/playlist").
+        Methods("GET").
+        Subrouter()
+    playlistApiRouter.Use(authenticator)
+    playlistApiRouter.Path("/metadata").Handler(createPlaylistMetadataHandler(server.meloDB))
+    playlistApiRouter.Path("/sample").Handler(createPlaylistSampleHandler(server.meloDB))
+    //playlistApiRouter.Path("/search").Handler(createSearchForPlaylistHandler(server.meloDB))
+
     adminAuthorizor := createAuthorizorMiddleware(server.meloDB, []string{"admin"})
     downloadRouter := router.PathPrefix("/download").Subrouter()
     downloadRouter.Use(authenticator)
@@ -116,6 +126,9 @@ func createRouterForServer(server MeloServer) *mux.Router {
     downloadRouter.Path("/song").
         Methods("POST").
         Handler(createPostSongHandler(server.meloDB))
+    downloadRouter.Path("/playlist").
+        Methods("POST").
+        Handler(createPostPlaylistHandler(server.meloDB))
 
     songRouter := router.PathPrefix("/song").Methods("GET").Subrouter()
     songRouter.Use(authenticator)
@@ -337,5 +350,86 @@ func createPostSongHandler(meloDB MeloDatabase) http.HandlerFunc {
         fmt.Fprintln(w, string(bytes))
         w.(http.Flusher).Flush()
         fmt.Fprintln(w, "done")
+    })
+}
+
+func createPlaylistMetadataHandler(meloDB MeloDatabase) http.HandlerFunc {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+        playlistId := r.URL.Query().Get("id")
+        if playlistId == "" {
+            w.WriteHeader(http.StatusBadRequest)
+            return
+        }
+        playlist, err := meloDB.GetPlaylist(playlistId)
+        if err != nil {
+            fmt.Printf("Failed to get playlist: %v\n", err)
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
+        b, err := json.Marshal(playlist)
+        if err != nil {
+            fmt.Printf("Failed to marshal playlist: %v\n", err)
+            w.WriteHeader(http.StatusInternalServerError)
+        }
+        w.Write(b)
+    })
+}
+
+
+func createPostPlaylistHandler(meloDB MeloDatabase) http.HandlerFunc {
+    return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+        b, err := io.ReadAll(r.Body)
+        if err != nil {
+            fmt.Printf("Failed to read body,\n%s\n", err)
+            w.WriteHeader(http.StatusBadRequest)
+            fmt.Fprint(w, "400 - Missing request body")
+            return
+        }
+        type PlaylistRequest struct {
+            Title, Description, Artwork string
+            Songs []map[string]string
+        }
+        var playlistRequest PlaylistRequest
+        err = json.Unmarshal(b,&playlistRequest)
+        if err != nil {
+            fmt.Printf("Failed to parse body,\n\t%s\n\t%s\n", err, string(b))
+            w.WriteHeader(http.StatusBadRequest)
+            fmt.Fprint(w, "400 - Malformed form data")
+            return
+        }
+        ids := make([]primitive.ObjectID, 0, len(playlistRequest.Songs))
+        for _,song := range(playlistRequest.Songs) {
+            id,err := meloDB.PostSong(song)
+            if err != nil {
+                fmt.Println(err)
+            }
+            w.WriteHeader(500)
+            ids = append(ids, id)
+        }
+        var playlist NormalizedPlaylist
+        playlist.Title = playlistRequest.Title
+        playlist.Description = playlistRequest.Description
+        playlist.Artwork = playlistRequest.Artwork
+        playlist.Songs = ids
+        id,err := meloDB.PostPlaylist(playlist)
+        fmt.Println(id,err)
+    })
+}
+
+func createPlaylistSampleHandler(meloDB MeloDatabase) http.HandlerFunc {
+    return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+        playlists, err := meloDB.SamplePlaylists()
+        if err != nil {
+            fmt.Println(err)
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
+        b, err := json.Marshal(playlists)
+        if err != nil {
+            fmt.Printf("Failed marshaling sample data:\n%v\n", err)
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
+        fmt.Fprint(w,string(b))
     })
 }
