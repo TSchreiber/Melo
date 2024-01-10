@@ -1,4 +1,4 @@
-![Melo Logo](/static/images/logo-128px.png)
+![Melo Logo](/static/images/logo-128px-bg.png)
 ## Music Streaming Service
 Melo uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) to aggregate songs from various sources such as YouTube and SoundCloud into a single library.
 ### How it works
@@ -16,6 +16,6 @@ The song's details will be presented to you in a form where you can double check
 
 #### Media session API
 
-Melo uses the [Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API) to provide users with access to song details and playback controls through whatever means the user's browser provides them (such as keyboard media keys and browser pop-up menus). 
+Melo uses the [Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API) to provide users with access to song details and playback controls through whatever means the user's browser provides them (such as keyboard media keys and browser pop-up menus).
 
 ![Screenshot showing Google Chrome's media control interacting with Melo](/static/images/media_session_api_example.png)
