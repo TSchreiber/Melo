@@ -4,5 +4,8 @@
   },
   "devDependencies": {
     "jsdoc-tsimport-plugin": "^1.0.5"
+  },
+  "scripts": {
+      "jsdoc": "npx jsdoc -c jsdoc.json"
   }
 }

@@ -4,7 +4,7 @@
         "node_modules/jsdoc-tsimport-plugin/index.js"
     ],
     "source": {
-        "include": [ "static/scripts/", "static/modules/" ],
+        "include": [ "static/modules/" ],
         "exclude": [],
         "includePattern": ".+\\.(m?js(doc|x)?)$",
         "excludePattern": "(^|\\/|\\\\)_"
