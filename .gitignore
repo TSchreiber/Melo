@@ -6,3 +6,4 @@ docs/
 node_modules/
 *.exe
 static/images/media_session_api_example.png
+static/images/artwork
