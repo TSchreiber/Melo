@@ -1,6 +1,7 @@
 /** @module ActionBar */
 
 import Auth from "./auth.mjs"
+import Navigation from "./navigation.mjs"
 
 /** @type {HTMLElement} */
 var _homeButton;
@@ -40,6 +41,16 @@ window.addEventListener("load", () => {
 
     logOutButton.addEventListener("click", () => {
         Auth.logOut();
+    });
+
+    let homePanel = getElementByIdOrError("home-panel");
+    _homeButton.addEventListener("click", () => {
+        Navigation.setActivePanel(homePanel);
+    });
+
+    let searchPanel = getElementByIdOrError("search-panel");
+    _searchButton.addEventListener("click", () => {
+        Navigation.setActivePanel(searchPanel);
     });
 });
 

@@ -20,6 +20,7 @@ button {
 a { text-decoration: none; color: unset; }
 input { font-size: 1rem; }
 p,h1,h2,h3,h4,h5,h6 { margin: 0; }
+p,h1,h2,h3,h4,h5,h6 { color: white; }
 
 .material-icons-outlined.md-dark { color: white; }
 .material-icons.md-dark { color: white; }

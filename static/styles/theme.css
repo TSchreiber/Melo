@@ -1,3 +1,7 @@
+:root {
+    --melo-blue: hsl(228, 31%, 36%);
+}
+
 .control-bar { background: #222230; }
 .content-container { background: #191927; }
 .info-container { background: #262634; }
@@ -12,6 +16,10 @@ input[type=range] {
     color: #03A9F4;
 }
 
+.bg-melo-blue {
+    background: var(--melo-blue)
+}
+
 .bg-dark-melo-blue {
-    background: #20304C;
+    background: hsl(228, 31%, 23%);
 }

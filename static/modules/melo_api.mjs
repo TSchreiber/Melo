@@ -52,11 +52,11 @@ function getSongMetadata(songId, idToken) {
 * @param {string} idToken The id token used to authorize the request
 * @return {Promise<MeloSongMetadata[]>}
 */
-function getHomePageSongs(idToken) {
+function sampleSongs(idToken) {
     return new Promise((resolve, reject) => {
         let headers = new Headers();
         headers.set("Authorization", idToken);
-        fetch ("/api/song/userHomePage", { headers })
+        fetch ("/api/song/sample", { headers })
         .then(res => res.json())
         .then(json => resolve(json))
         .catch(err => reject(err));
@@ -176,6 +176,29 @@ function getPlaylist(playlistId, idToken) {
 }
 
 /**
+ * Fetches the playlists owned by the user
+ * @param {string} idToken The id token used to authorize the request
+ * @return {Promise<MeloPlaylistMetadata[]>}
+ */
+function getPersonalPlaylists(idToken) {
+    return new Promise((resolve, reject) => {
+        let headers = new Headers();
+        headers.set("Authorization", idToken);
+        fetch ("/api/playlist/personal", { headers })
+        .then(res => res.json())
+        .then(json => {
+            if (!json) {
+                resolve([]);
+            }
+            else {
+                resolve(json);
+            }
+        })
+        .catch(err => reject(err));
+    });
+}
+
+/**
  * Fetches a random set of playlists
  * @param {string} idToken The id token used to authorize the request
  * @return {Promise<MeloPlaylistMetadata[]>}
@@ -198,13 +221,112 @@ function samplePlaylists(idToken) {
     });
 }
 
+/**
+ *
+ * @param {string} idToken The id token used to authorize the request
+ * @param {MeloPlaylistMetadata} playlist
+ * @return {Promise<string>}
+ */
+function postPlaylist(idToken, playlist) {
+    return new Promise((resolve, reject) => {
+        let headers = new Headers();
+        headers.set("Authorization", idToken);
+        fetch ("/api/playlist", {
+            headers,
+            method: "POST",
+            body: JSON.stringify(playlist),
+        })
+        .then(res => res.json())
+        .then(json => {
+            if (!(json?.playlistId)) {
+                reject("Response is missing \"playlistId\" property");
+            }
+            else {
+                resolve(json.playlistId);
+            }
+        })
+        .catch(err => reject(err));
+    });
+}
+
+/**
+ *
+ * @param {string} idToken The id token used to authorize the request
+ * @param {MeloPlaylistMetadata} playlist
+ * @return {Promise<void>}
+ */
+function updatePlaylistMetadata(idToken, playlist) {
+    return new Promise((resolve, reject) => {
+        // @ts-ignore
+        playlist.playlistId = playlist.id;
+        // @ts-ignore
+        delete playlist.id;
+        let headers = new Headers();
+        headers.set("Authorization", idToken);
+        fetch ("/api/playlist/metadata", {
+            headers,
+            method: "POST",
+            body: JSON.stringify(playlist),
+        })
+        .then(() => resolve())
+        .catch(err => reject(err));
+    });
+}
+
+/**
+ *
+ * @param {string} idToken The id token used to authorize the request
+ * @param {string} playlistId
+ * @param {string} songId
+ * @return {Promise<void>}
+ */
+function addSongToPlaylist(idToken, playlistId, songId) {
+    return new Promise((resolve, reject) => {
+        let headers = new Headers();
+        headers.set("Authorization", idToken);
+        fetch ("/api/playlist/addSong", {
+            headers,
+            method: "POST",
+            body: JSON.stringify({ playlistId, songId }),
+        })
+        .then(() => resolve())
+        .catch(err => reject(err));
+    });
+}
+
+/**
+ *
+ * @param {string} idToken The id token used to authorize the request
+ * @param {string} playlistId
+ * @param {string} songId
+ * @return {Promise<void>}
+ */
+function removeSongFromPlaylist(idToken, playlistId, songId) {
+    return new Promise((resolve, reject) => {
+        let headers = new Headers();
+        headers.set("Authorization", idToken);
+        fetch ("/api/playlist/removeSong", {
+            headers,
+            method: "POST",
+            body: JSON.stringify({ playlistId, songId }),
+        })
+        .then(() => resolve())
+        .catch(err => reject(err));
+    });
+}
+
 export default {
     getSongMetadata,
-    getHomePageSongs,
+    sampleSongs,
     searchForSong,
     getBlobURLForSong,
     fetchSongMetadataFromURL,
     postSong,
     getPlaylist,
+    getPersonalPlaylists,
     samplePlaylists,
+    postPlaylist,
+    updatePlaylistMetadata,
+    addSongToPlaylist,
+    removeSongFromPlaylist,
 }

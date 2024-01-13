@@ -389,3 +389,41 @@ input[type=range]:hover::-webkit-slider-thumb {
 #playlist-description {
     grid-area: description;
 }
+
+#playlist-form input,
+#playlist-form textarea {
+    background: hsl(240,14%,24%);
+    padding: 0.25em;
+    border: solid #00000000 1px;
+    border-radius: 0.25rem;
+    outline: none;
+    color: white;
+}
+
+#playlist-form input {
+    width: 50ch;
+}
+
+#playlist-form textarea {
+    width: 97%;
+}
+
+#playlist-form input:focus-within,
+#playlist-form textarea:focus-within {
+    border: solid #219bc4 1px;
+}
+
+#playlist-form label {
+    color: white;
+    display: block;
+    font-size: 1.4rem;
+}
+
+#playlist-form button {
+    background: hsl(240,14%,24%);
+    padding: 0.25em;
+    border: solid #00000000 1px;
+    border-radius: 0.25rem;
+    outline: none;
+    color: white;
+}

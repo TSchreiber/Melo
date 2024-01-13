@@ -19,6 +19,7 @@
         <script src="/modules/playlist.mjs" type="module"></script>
         <script src="/modules/catalog.mjs" type="module"></script>
         <script src="/modules/action_bar.mjs" type="module"></script>
+        <script src="/modules/search.mjs" type="module"></script>
     </head>
 
     <script type="module">
@@ -32,11 +33,6 @@
             Auth.refreshIdToken();
         }
     </script>
-
-    <label id="search-bar-container" for="search" style="display: none;">
-        <input id="search" type="search" autocomplete="off"></input>
-        <button class="material-icons md-dark">search</button>
-    </label>
 
     <body>
         <video id="audio-player"><source type="audio/mp3" /></video>
@@ -69,16 +65,45 @@
         </div>
 
         <div id="main-panel" class="px-8 py-4">
-            <div id="home-panel"> </div>
+            <div id="home-panel" class="flex flex-column gap-2">
+                <div>
+                    <div id="create-playlist-button"
+                        class="cursor-pointer bg-dark-melo-blue
+                               p-2 rounded-lg inline-block">
+                        New Playlist
+                    </div>
+                </div>
+                <div id="catalog--playlist-container"
+                    class="grid grid-cols-fit-20
+                           gap-y-2 gap-x-4 justify-center"
+                    ></div>
+            </div>
+            <div id="search-panel" class="hidden">
+                <label id="search-bar-container" for="search"
+                    style="grid-template-columns: 1fr auto;"
+                    class="grid grid-flow-col px-3 py-1 max-w-lg m-auto">
+                    <input id="search" type="search" autocomplete="off"></input>
+                    <button class="material-icons md-dark pl-4">search</button>
+                </label>
+                <div id="search-results-container"
+                    class="grid grid-cols-fit-23
+                           gap-y-2 gap-x-4 justify-center"
+                    ></div>
+            </div>
             <div id="playlist-panel" class="hidden">
                 <div id="playlist-header" class="flex gap-4">
                     <div id="playlist-artwork-container">
                         <img id="playlist-artwork"
                         class="bg-black w-48 h-48 object-cover">
                     </div>
-                    <div class="flex flex-column justify-center">
+                    <div class="flex flex-column justify-center relative">
                         <div id="playlist-title" class="text-4xl"> </div>
                         <div id="playlist-description" class="text-lg"> </div>
+                        <div id="edit-playlist-button"
+                            class="absolute left-0 top-0
+                            material-icons md-dark cursor-pointer">
+                            edit
+                        </div>
                     </div>
                 </div>
                 <div class="content-container">
