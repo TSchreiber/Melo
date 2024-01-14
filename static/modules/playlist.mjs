@@ -31,8 +31,12 @@ var _description;
 var _songTableBody;
 /** @type {HTMLElement} */
 var _playPlaylistButton;
+/** @type {HTMLElement} */
+var _shufflePlaylistButton;
 /** @type {EventListener} */
 var _playPlaylistEventListener;
+/** @type {EventListener} */
+var _shufflePlaylistEventListener;
 
 window.addEventListener("load", async () => {
     _artwork = /** @type {HTMLImageElement} */
@@ -41,6 +45,7 @@ window.addEventListener("load", async () => {
     _description = getElementByIdOrError('playlist-description')
     _songTableBody = getElementByIdOrError('song-table-body');
     _playPlaylistButton = getElementByIdOrError('play-playlist-button');
+    _shufflePlaylistButton = getElementByIdOrError('shuffle-play-playlist-button');
 
     getElementByIdOrError("edit-playlist-button")
         .addEventListener("click", () => {
@@ -88,6 +93,28 @@ function setPlaylist(playlist) {
         _playlist.songs.forEach(Queue.push);
     }
     _playPlaylistButton.addEventListener("click", _playPlaylistEventListener);
+
+    _shufflePlaylistButton.removeEventListener("click", _shufflePlaylistEventListener);
+    _shufflePlaylistEventListener = () => {
+        toShuffled(_playlist.songs).forEach(Queue.push);
+    }
+    _shufflePlaylistButton.addEventListener("click", _shufflePlaylistEventListener);
+}
+
+/**
+ * @param {Array} array
+ * @returns {Array}
+ */
+function toShuffled(array) {
+    let out = [...array];
+    let currentIndex = out.length,  randomIndex;
+    while (currentIndex > 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [out[currentIndex], out[randomIndex]] =
+            [out[randomIndex], out[currentIndex]];
+    }
+    return out;
 }
 
 /**
