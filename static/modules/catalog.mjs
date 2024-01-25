@@ -77,9 +77,13 @@ function createPlaylistEntry(playlist) {
             <img class="bg-black w-16 h-16 object-cover"
                  src="${playlist.artwork}">
         </div>
-        <div class="flex flex-column justify-center">
-            <div class="text-lg">${playlist.title}</div>
-            <div class="text-xs">${playlist.description}</div>
+        <div class="flex flex-column justify-center overflow-hidden">
+            <div class="text-lg whitespace-nowrap text-ellipsis overflow-hidden">
+                ${playlist.title}
+            </div>
+            <div class="text-xs">
+                ${playlist.description}
+            </div>
         </div>`
     el.addEventListener("click", async () => {
         let idToken = Auth.getIdToken() ||

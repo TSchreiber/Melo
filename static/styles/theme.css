@@ -1,5 +1,6 @@
 :root {
     --melo-blue: hsl(228, 31%, 36%);
+    --bright-melo-blue: #03A9F4;
 }
 
 .control-bar { background: #222230; }
@@ -13,7 +14,7 @@ input[type=range] {
 }
 
 .fg-bright-melo-blue {
-    color: #03A9F4;
+    color: var(--bright-melo-blue)
 }
 
 .bg-melo-blue {

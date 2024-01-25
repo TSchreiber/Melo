@@ -13,6 +13,7 @@
         <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
         <link rel="stylesheet" href="/styles/base.css">
         <link rel="stylesheet" href="/styles/theme.css">
+        <link rel="stylesheet" href="/styles/tailwind.css">
         <link rel="stylesheet" href="/styles/download_song.css">
         <script src="/modules/song_download_controller.mjs" type="module"></script>
     </head>
@@ -30,32 +31,35 @@
         }
     </script>
 
-    <body>
-        <form id="new-song-form" action="" onsubmit="return false;">
-            <h2>New Song</h2>
+    <body style="background: #242432; overflow: initial;"
+        class="flex flex-column">
+        <main class="bg-dark-melo-blue m-auto mt-16 mb-16 p-4 rounded-lg
+            flex flex-column gap-4">
+            <h1>Search for a song</h1>
+            <style>
+                #search:focus-visible {
+                    outline: none;
+                }
 
-            <div class="tab" data-tab="1" data-focused>
-                <label for="source-url">Song URL</label>
-                <input id="source-url" autocomplete="off">
-            </div>
-
-            <div class="tab" data-tab="2">
-                <label for="title">Title</label>
-                <input id="title" name="title" autocomplete="off">
-                <label for="artist">Artist</label>
-                <input id="artist" name="artist" autocomplete="off">
-                <label for="album">Album</label>
-                <input id="album" name="album" autocomplete="off">
-                <label for="artwork">Artwork URL</label>
-                <input id="artwork-url" name="artwork-url" autocomplete="off">
-                <img id="artwork-img" src="" alt="Image of the song's artwork">
-            </div>
-
-            <div class="tab" data-tab="3">
-                <div id="song-download-progress"></div>
-            </div>
-
-            <button id="next-tab">Next</button>
-        </form>
+                label:focus-within {
+                    outline: -webkit-focus-ring-color auto 1px;
+                }
+            </style>
+            <form id="search-form"
+                class="rounded-lg flex flex-column gap-4">
+                <label for="search"
+                    class="flex space-between rounded border-black border-2 border-solid bg-white">
+                    <input id="search"
+                        name="search"
+                        type="search"
+                        autocomplete="off"
+                        class="border-none bg-none w-full"
+                        style="margin-bottom: 0">
+                    </input>
+                    <div class="material-icons">search</div>
+                </label>
+                <button type="submit" class="w-full py-1 rounded text-lg bg-white">Search</button>
+            </form>
+        </main>
     </body>
 </html>

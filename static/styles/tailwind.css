@@ -6,6 +6,22 @@
     margin: 0;
 }
 
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mt-16 {
+    margin-top: 4rem;
+}
+
+.mb-16 {
+    margin-bottom: 4rem;
+}
+
 .py-1 {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
@@ -62,6 +78,10 @@
     padding-bottom: 2rem;
 }
 
+.gap-1 {
+    gap: 0.25rem;
+}
+
 .gap-2 {
     gap: 0.5rem;
 }
@@ -106,6 +126,10 @@
     justify-content: center;
 }
 
+.justify-items-center {
+    justify-items: center;
+}
+
 .items-center {
     align-items: center;
 }
@@ -118,6 +142,18 @@
     display: grid;
 }
 
+.grid-cols-subgrid {
+    grid-template-columns: subgrid;
+}
+
+.col-span-2 {
+    grid-column: span 2;
+}
+
+.col-span-full {
+    grid-column: 1 / -1;
+}
+
 .grid-cols-fit-20 {
     grid-template-columns: repeat(auto-fit, 20rem);
 }
@@ -126,8 +162,16 @@
     grid-template-columns: repeat(auto-fit, 23rem);
 }
 
+.bg-none {
+    background: none;
+}
+
+.bg-white {
+    background-color: white;
+}
+
 .bg-black {
-    background-color: rgb(0 0 0);
+    background-color: black
 }
 
 .max-w-lg {
@@ -136,6 +180,14 @@
 
 .w-full {
     width: 100%;
+}
+
+.w-10 {
+    width: 2.5rem;
+}
+
+.h-10 {
+    height: 2.5rem;
 }
 
 .w-12 {
@@ -152,6 +204,14 @@ h-12 {
 
 .h-16 {
     height: 4em;
+}
+
+.w-24 {
+    width: 6em;
+}
+
+.h-24 {
+    height: 6em;
 }
 
 .w-32 {
@@ -243,8 +303,12 @@ h-64 {
     display: none;
 }
 
+.cursor-default {
+    cursor: default;
+}
+
 .cursor-pointer {
-    cursor: pointer
+    cursor: pointer;
 }
 
 .relative {
@@ -263,6 +327,22 @@ h-64 {
 
 .fixed {
     position: fixed;
+}
+
+.border-none {
+    border-style: none;
+}
+
+.border-solid {
+    border-style: solid;
+}
+
+.border-2 {
+    border-width: 2px;
+}
+
+.border-black {
+    border-color: black;
 }
 
 .rounded {
@@ -295,6 +375,10 @@ h-64 {
 
 .text-white {
     color: white;
+}
+
+.text-black {
+    color: black;
 }
 
 .text-zinc-300 {

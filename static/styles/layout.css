@@ -190,10 +190,38 @@ input[type=range]:hover::-webkit-slider-thumb {
     }
 }
 
+/**
+ * Action bar
+ */
+#action-bar {
+    grid-template-areas: "home search . account settings";
+    grid-template-columns: auto auto 1fr auto auto;
+}
+
+#home-button     { grid-area: home; }
+#search-button   { grid-area: search; }
+#action-bar-icon { grid-area: icon; }
+#account-button  { grid-area: account; }
+#settings-button { grid-area: settings; }
+
 @media only screen and (max-width: 492px) {
     body {
-        grid-template-areas: "content" "info" "controls";
+        grid-template-areas:
+            "content"
+            "info"
+            "controls"
+            "action-bar";
         grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto auto auto;
+    }
+
+    #action-bar-icon {
+        display: block;
+    }
+
+    #action-bar {
+        grid-template-areas: "home search icon account settings";
+        grid-template-columns: repeat(5, 1fr);
     }
 
     .side-bar {

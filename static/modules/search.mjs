@@ -93,7 +93,7 @@ function createSongEntry(song) {
         el.addEventListener("click", (e) => {
             let target = /** @type {HTMLElement} */ (e.target);
             let action = target.getAttribute("data-action");
-            if (action = "add") {
+            if (action == "add") {
                 showAddToPlaylistModal(song);
             } else {
                 playSong(song);

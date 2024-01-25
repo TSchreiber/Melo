@@ -36,31 +36,31 @@
 
     <body>
         <video id="audio-player"><source type="audio/mp3" /></video>
-        <div id="action-bar" class="flex space-between py-2 px-8">
-            <div class="flex gap-4">
-                <div id="home-button">
-                    <button class="material-icons md-dark">home</button>
-                </div>
-                <div id="search-button">
-                    <button class="material-icons md-dark">search</button>
-                </div>
+        <div id="action-bar" class="grid justify-items-center py-2 px-8">
+            <div id="home-button">
+                <button class="material-icons md-dark w-10 h-10 text-3xl">home</button>
             </div>
-            <div class="flex gap-4">
-                <div class="relative">
-                    <button id="account-button" class="material-icons md-dark">person</button>
-                    <div id="account-menu" class="
-                        hidden flex flex-column gap-2
-                        absolute right-0 p-4 rounded
-                        bg-dark-melo-blue">
-                        <div> Currently signed in as </div>
-                        <div id="account-menu-username" class="text-zinc-300 text-sm"></div>
-                        <hr class="m-0 w-full border-slate-500"/>
-                        <div id="log-out-button" class="cursor-pointer">Log out</div>
-                    </div>
+            <div id="search-button">
+                <button class="material-icons md-dark w-10 h-10 text-3xl">search</button>
+            </div>
+            <img id="action-bar-icon" src="/images/no_background.png"
+                class="hidden w-10 h-10 object-cover">
+            <button id="account-button" class="relative">
+                <div class="material-icons md-dark w-10 h-10 text-3xl">
+                    person
                 </div>
-                <div id="settings-button">
-                    <button class="material-icons md-dark">settings</button>
+                <div id="account-menu" class="
+                    hidden flex flex-column gap-2 cursor-default
+                    absolute right-0 p-4 rounded
+                    bg-dark-melo-blue text-white">
+                    <div> Currently signed in as </div>
+                    <div id="account-menu-username" class="text-zinc-300 text-sm"></div>
+                    <hr class="m-0 w-full border-slate-500"/>
+                    <div id="log-out-button" class="cursor-pointer">Log out</div>
                 </div>
+            </button>
+            <div id="settings-button">
+                <button class="material-icons md-dark w-10 h-10 text-3xl">settings</button>
             </div>
         </div>
 
@@ -186,7 +186,6 @@
                 <input id="volume-slider" type="range" min="0" max="100" value="50">
             </div>
         </div>
-        <div id="foreground" class="hidden"> </div>
     </body>
     <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');</script>
 </html>

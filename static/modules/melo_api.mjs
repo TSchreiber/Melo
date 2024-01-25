@@ -108,16 +108,15 @@ function getBlobURLForSong(song, idToken) {
 }
 
 /**
-* Attempts to retrieve the metadata for the song at the provided url.
-* @param {string} url
-* @param {string} idToken The id token used to authorize the request
-* @return {Promise<MeloSongMetadata>}
-*/
-function fetchSongMetadataFromURL(url, idToken) {
+ * @param {string} idToken The id token used to authorize the request
+ * @param {string} query
+ * @return {Object}
+ */
+function externalSearch(idToken, query) {
     return new Promise((resolve, reject) => {
         let headers = new Headers();
         headers.set("Authorization", idToken);
-        fetch (`/download/metadata?url=${url}`, { headers })
+        fetch (`/download/search?q=${query}`, { headers })
         .then(res => res.json())
         .then(json => resolve(json))
         .catch(err => reject(err));
@@ -320,7 +319,7 @@ export default {
     sampleSongs,
     searchForSong,
     getBlobURLForSong,
-    fetchSongMetadataFromURL,
+    externalSearch,
     postSong,
     getPlaylist,
     getPersonalPlaylists,

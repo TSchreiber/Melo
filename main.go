@@ -5,7 +5,7 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/TSchreiber/005_music_api/internal"
+	"github.com/TSchreiber/melo/internal"
 )
 
 func main() {
